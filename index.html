@@ -1,0 +1,1522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#0d0f12">
+<title>SUPERSOUND WM-26 · Cassette Walkman</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>
+  :root{ --accent:#e05e00; --ledplay:#39d353; --led:#ff3b30; }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none; -webkit-user-select:none; }
+  html,body{ margin:0; padding:0; background:#0d0f12; min-height:100%; }
+  body{
+    font-family:"Helvetica Neue", Arial, sans-serif;
+    display:flex; justify-content:center;
+    background: radial-gradient(1200px 600px at 50% -10%, #23272f 0%, #0d0f12 60%);
+    padding:14px 10px 30px;
+  }
+  .scene{ width:100%; max-width:900px; }
+
+  /* ================= aluminum body ================= */
+  .walkman{
+    width:100%;
+    background:
+      repeating-linear-gradient(90deg, rgba(255,255,255,.07) 0 1px, rgba(0,0,0,.035) 1px 3px),
+      linear-gradient(180deg,#e8ebf0 0%, #c8cdd6 45%, #a8afbb 100%);
+    border-radius:22px;
+    border:1px solid #767d8a;
+    box-shadow:
+      0 22px 55px rgba(0,0,0,.65),
+      inset 0 2px 0 rgba(255,255,255,.85),
+      inset 0 -3px 6px rgba(0,0,0,.25),
+      inset 3px 0 6px rgba(255,255,255,.25),
+      inset -3px 0 6px rgba(0,0,0,.12);
+    padding:16px 16px 20px;
+    position:relative;
+  }
+  .walkman::before,.walkman::after{
+    content:""; position:absolute; width:11px; height:11px; border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #f5f7fa, #8a909c 60%, #3c414b);
+    box-shadow:inset 0 0 2px rgba(0,0,0,.8), 0 1px 1px rgba(255,255,255,.6); top:12px;
+  }
+  .walkman::before{ left:12px; }
+  .walkman::after{ right:12px; }
+
+  .topbar{ display:flex; align-items:center; gap:10px; padding:2px 10px 12px; }
+  .brand{
+    font-weight:900; font-style:italic; letter-spacing:1px; font-size:20px;
+    color:#33383f; text-shadow:0 1px 0 rgba(255,255,255,.75);
+  }
+  .brand em{ color:var(--accent); font-style:italic; }
+  .model{ font-size:9px; letter-spacing:2px; color:#5c6370; flex:1; text-shadow:0 1px 0 rgba(255,255,255,.6); }
+  .batt{
+    position:relative; width:30px; height:13px; border:2px solid #5c6370; border-radius:3px;
+    background:#20242c; box-shadow:inset 0 1px 3px rgba(0,0,0,.7);
+  }
+  .batt::after{
+    content:""; position:absolute; right:-5px; top:2.5px; width:3px; height:4px;
+    background:#5c6370; border-radius:0 1px 1px 0;
+  }
+  .batt i{
+    position:absolute; left:1px; top:1px; bottom:1px; width:80%;
+    background:#39d353; border-radius:1px; transition:width .4s, background .4s;
+  }
+  .batt i.mid{ background:#e8b64a; }
+  .batt i.low{ background:#ff3b30; animation:blink 1.2s steps(1) infinite; }
+  .led{
+    width:9px; height:9px; border-radius:50%;
+    background:#5a1512; box-shadow:inset 0 1px 2px #000, 0 1px 0 rgba(255,255,255,.5); transition:all .2s;
+  }
+  .led.on{ background:var(--ledplay); box-shadow:0 0 10px var(--ledplay), 0 0 3px var(--ledplay); }
+  .led.pause{ background:var(--led); box-shadow:0 0 10px var(--led); animation:blink 1s steps(1) infinite; }
+  .led.rec{ background:#ff3b30; box-shadow:0 0 12px #ff3b30; animation:blink 1s steps(1) infinite; }
+  @keyframes blink{ 50%{ opacity:.15; } }
+
+  /* ================= deck window ================= */
+  .deck{
+    background:linear-gradient(180deg,#23262d,#101216);
+    border-radius:16px; padding:10px;
+    border:1px solid #565c68;
+    box-shadow:inset 0 3px 10px rgba(0,0,0,.85), 0 1px 0 rgba(255,255,255,.5);
+  }
+  .deck-head{
+    display:flex; justify-content:space-between; padding:0 6px 8px;
+    font-size:8px; letter-spacing:3px; color:#6a7180;
+  }
+  .deck-window{
+    position:relative; border-radius:10px; overflow:hidden;
+    background: linear-gradient(180deg, rgba(255,255,255,.04), transparent 30%), #0c0e12;
+    aspect-ratio:300/196;
+    border:1px solid #2c313c;
+    box-shadow:inset 0 4px 14px rgba(0,0,0,.9);
+    cursor:pointer; touch-action:none;
+  }
+  .empty-msg{
+    position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    color:#4a505c; letter-spacing:4px; font-size:13px; font-weight:700; text-align:center; gap:6px;
+  }
+  .empty-msg small{ letter-spacing:1px; font-weight:400; font-size:11px; color:#3a4049; }
+  .holder{ position:absolute; inset:3.5% 3%; }
+  .holder svg{ width:100%; height:100%; display:block; filter:drop-shadow(0 7px 12px rgba(0,0,0,.65)); }
+  .holder.inserting{ animation:insert .55s cubic-bezier(.2,.9,.3,1.05) both; }
+  .holder.ejecting{ animation:eject .45s cubic-bezier(.5,0,.8,.4) both; }
+  @keyframes insert{ from{ transform:translateY(-135%) rotate(-2deg); } 70%{ transform:translateY(3%) rotate(.5deg);} to{ transform:none; } }
+  @keyframes eject{ from{ transform:none; } to{ transform:translateY(-140%) rotate(-3deg); opacity:.9; } }
+  .door-glass{
+    position:absolute; inset:0; pointer-events:none; border-radius:10px;
+    background: linear-gradient(115deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,.04) 26%, transparent 42%, transparent 68%, rgba(255,255,255,.07) 100%);
+  }
+  .scrub-hint{
+    position:absolute; left:0; right:0; bottom:5px; display:flex; justify-content:space-between;
+    padding:0 14px; pointer-events:none; font-size:8px; letter-spacing:2px; color:rgba(255,255,255,.28);
+  }
+
+  /* ================= layout ================= */
+  .main{ display:grid; grid-template-columns:1.2fr 1fr; gap:16px; align-items:stretch; margin-top:2px; }
+  .main .left{ display:flex; flex-direction:column; }
+  .main .deck{ flex:1; display:flex; flex-direction:column; }
+  .main .deck-window{ flex:1; }
+  .main .right{ display:flex; flex-direction:column; justify-content:space-between; gap:12px; }
+  .main .counter-row{ margin:0 2px; }
+  .main .volume-row{ margin:0 4px; }
+  .main .switches{ margin:0 6px; }
+  @media (max-width:640px){ .main{ grid-template-columns:1fr; } }
+
+  /* ================= counter row ================= */
+  .counter-row{ display:flex; align-items:center; gap:10px; margin:12px 4px 12px; }
+  .counter{
+    font-family:"Courier New", monospace; font-weight:700; font-size:20px; letter-spacing:6px;
+    color:#f2e8cf; background:#171410; border:1px solid #565040; border-radius:5px;
+    padding:4px 6px 4px 12px; box-shadow:inset 0 3px 9px rgba(0,0,0,.95), 0 1px 0 rgba(255,255,255,.5);
+    text-shadow:0 0 7px rgba(255,220,140,.4);
+  }
+  .time{ flex:1; font-family:"Courier New",monospace; font-size:12px; color:#4c525e; letter-spacing:1px; text-shadow:0 1px 0 rgba(255,255,255,.55); }
+  .mode-lbl{
+    font-size:11px; font-weight:800; letter-spacing:2px; color:var(--accent);
+    background:#20242c; border:1px solid #3a4048; border-radius:4px; padding:4px 8px; min-width:56px; text-align:center;
+    box-shadow:inset 0 2px 5px rgba(0,0,0,.7), 0 1px 0 rgba(255,255,255,.5);
+  }
+  .btn-rec{
+    flex:0 0 auto; width:48px; height:48px; border-radius:50%; border:1px solid #7a1f1f; cursor:pointer;
+    background:radial-gradient(circle at 35% 30%, #ff6b5e, #c0271c 70%, #8a1410);
+    box-shadow:0 4px 0 #5c0d08, 0 6px 10px rgba(0,0,0,.4), inset 0 2px 3px rgba(255,255,255,.45);
+    color:#fff; font-size:10px; font-weight:900; letter-spacing:1px;
+    transition:transform .06s, box-shadow .06s;
+  }
+  .btn-rec:active,.btn-rec.latched{
+    transform:translateY(4px);
+    box-shadow:0 0 0 #5c0d08, inset 0 3px 6px rgba(0,0,0,.5);
+  }
+
+  /* ================= piano-key buttons ================= */
+  .controls{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:5px;
+    background:linear-gradient(180deg,#1b1e25,#2a2e37);
+    border:1px solid #4c525e; border-radius:14px; padding:6px;
+    box-shadow:inset 0 3px 8px rgba(0,0,0,.8), 0 1px 0 rgba(255,255,255,.55);
+  }
+  .btn{
+    position:relative; border:0; border-radius:9px; padding:0; cursor:pointer;
+    height:60px; font-family:inherit;
+    background:
+      repeating-linear-gradient(90deg, rgba(255,255,255,.09) 0 1px, transparent 1px 3px),
+      linear-gradient(180deg,#f3f5f9 0%,#ccd2db 55%,#aab1bd 100%);
+    box-shadow: 0 5px 0 #5d6470, 0 7px 10px rgba(0,0,0,.45), inset 0 1px 0 #ffffff, inset 0 -2px 3px rgba(0,0,0,.18);
+    color:#2f3440; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+    transition:transform .06s, box-shadow .06s;
+    touch-action:manipulation;
+  }
+  .btn .sym{ font-size:18px; line-height:1; letter-spacing:2px; color:#33383f; text-shadow:0 1px 0 rgba(255,255,255,.7); }
+  .btn .lbl{ font-size:8px; letter-spacing:3px; color:#5c6370; font-weight:800; }
+  .btn:active, .btn.down{
+    transform:translateY(4px);
+    box-shadow: 0 1px 0 #5d6470, 0 2px 4px rgba(0,0,0,.4), inset 0 2px 6px rgba(0,0,0,.3);
+  }
+  .btn.latched{
+    transform:translateY(4px);
+    background:linear-gradient(180deg,#d6dbe3,#b3bac6 60%,#9aa1ad);
+    box-shadow: 0 1px 0 #5d6470, inset 0 3px 7px rgba(0,0,0,.35);
+  }
+  .btn.latched .sym, .btn.latched .lbl{ color:var(--accent); text-shadow:none; }
+  .btn.eject .sym{ color:#8a4038; }
+
+  /* ================= volume + switches ================= */
+  .volume-row{ display:flex; align-items:center; gap:12px; margin:16px 6px 4px; }
+  .vlbl{ font-size:9px; letter-spacing:3px; color:#5c6370; font-weight:800; text-shadow:0 1px 0 rgba(255,255,255,.6); }
+  input[type=range].vol{ flex:1; -webkit-appearance:none; appearance:none; height:22px; background:transparent; }
+  input[type=range].vol::-webkit-slider-runnable-track{
+    height:8px; border-radius:4px;
+    background:linear-gradient(180deg,#14171d,#262b34);
+    box-shadow:inset 0 2px 4px rgba(0,0,0,.85), 0 1px 0 rgba(255,255,255,.6);
+  }
+  input[type=range].vol::-webkit-slider-thumb{
+    -webkit-appearance:none; width:32px; height:22px; margin-top:-7px; border-radius:4px;
+    background:
+      repeating-linear-gradient(90deg, rgba(0,0,0,.22) 0 2px, transparent 2px 5px),
+      linear-gradient(180deg,#eef1f5,#b9bfc9);
+    box-shadow:0 2px 4px rgba(0,0,0,.55), inset 0 1px 0 #fff;
+    border:1px solid #767d8a;
+  }
+  input[type=range].vol::-moz-range-track{ height:8px; border-radius:4px; background:#14171d; }
+  input[type=range].vol::-moz-range-thumb{ width:32px; height:22px; border-radius:4px; background:#c6ccd6; border:1px solid #767d8a; }
+
+  .switches{
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
+    margin:10px 8px 0; font-size:8px; letter-spacing:2px; color:#5c6370; font-weight:800;
+  }
+  .switches span{ text-shadow:0 1px 0 rgba(255,255,255,.6); }
+  .sw{
+    width:38px; height:15px; background:#191c22; border-radius:3px; position:relative; cursor:pointer;
+    box-shadow:inset 0 2px 4px rgba(0,0,0,.85), 0 1px 0 rgba(255,255,255,.55);
+  }
+  .sw i{
+    position:absolute; top:2px; left:2px; width:16px; height:11px; border-radius:2px;
+    background:linear-gradient(180deg,#eef1f5,#aab1bd);
+    box-shadow:0 1px 2px rgba(0,0,0,.6); transition:left .12s;
+  }
+  .sw.on i{ left:20px; }
+
+  /* ================= tape case ================= */
+  .shelf-area{ margin-top:18px; }
+  .shelf-head{ display:flex; align-items:center; justify-content:space-between; padding:0 4px 8px; }
+  .shelf-head span{ font-size:10px; letter-spacing:3px; color:#5c6370; font-weight:800; text-shadow:0 1px 0 rgba(255,255,255,.6); }
+  #addBtn{
+    background:linear-gradient(180deg,#ff8c33,#d95a00); color:#fff; border:1px solid #a34400; border-radius:8px;
+    font-size:11px; font-weight:800; letter-spacing:1px; padding:8px 12px; cursor:pointer;
+    box-shadow:0 3px 0 #7c3400, 0 5px 10px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.4);
+    text-shadow:0 1px 1px rgba(0,0,0,.35);
+  }
+  #addBtn:active{ transform:translateY(3px); box-shadow:0 0 0 #7c3400; }
+  .shelf{
+    display:flex; gap:12px; overflow-x:auto; padding:12px 10px 14px; scrollbar-width:thin;
+    background:
+      repeating-linear-gradient(45deg, rgba(0,0,0,.12) 0 2px, transparent 2px 4px),
+      linear-gradient(180deg,#403229,#2c211b);
+    border:1px solid #59473a;
+    border-radius:12px;
+    box-shadow:inset 0 4px 10px rgba(0,0,0,.75), 0 1px 0 rgba(255,255,255,.4);
+    min-height:96px;
+  }
+  .shelf:empty::after{
+    content:"tape case is empty — add music"; color:#8a715c; font-size:11px; letter-spacing:1px;
+    display:flex; align-items:center; padding:0 14px;
+  }
+  .mini{
+    flex:0 0 auto; width:128px; border-radius:5px; padding:7px 7px 5px; cursor:pointer;
+    background:linear-gradient(180deg,#32353c,#1c1e24);
+    border:1px solid #4a4f5a;
+    box-shadow:0 4px 8px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.12);
+    transition:transform .12s;
+  }
+  .mini:active{ transform:scale(.94); }
+  .mini .mlabel{
+    border-radius:3px; overflow:hidden; background:#f2ead7;
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,.2);
+  }
+  .mini .mband{
+    padding:4px 6px; font-size:9px; font-weight:800; color:#2b2417;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; letter-spacing:.3px;
+    font-family:"Bradley Hand","Segoe Script","Comic Sans MS",cursive;
+  }
+  .mini .mwin{
+    margin:4px 14px 5px; height:20px; border-radius:10px; background:#101216;
+    display:flex; justify-content:space-between; align-items:center; padding:0 6px;
+    box-shadow:inset 0 1px 3px rgba(0,0,0,.9);
+  }
+  .mini .mwin i{
+    width:12px; height:12px; border-radius:50%; background:#e8ebf2;
+    box-shadow:inset 0 0 0 2px #262a33, 0 0 0 3px #3a2b20;
+  }
+  .mini .msub{ font-size:7px; color:#6a7180; margin-top:5px; letter-spacing:2px; text-align:center; }
+  .mini .msub.warn{ color:#e07050; font-weight:800; }
+
+  .hint{ text-align:center; font-size:10px; color:#78808e; letter-spacing:1px; margin-top:14px; text-shadow:0 1px 0 rgba(255,255,255,.5); }
+
+  /* ================= wooden desk ================= */
+  .desk{
+    position:relative; height:262px; margin-top:16px;
+    background:
+      repeating-linear-gradient(90deg, rgba(0,0,0,.07) 0 3px, transparent 3px 46px),
+      repeating-linear-gradient(0deg, rgba(255,255,255,.02) 0 2px, transparent 2px 6px),
+      linear-gradient(180deg,#54402c,#3b2c1d);
+    border-radius:14px; border:1px solid #63503a;
+    box-shadow:inset 0 5px 14px rgba(0,0,0,.55), 0 10px 24px rgba(0,0,0,.4);
+  }
+  .desk-label{
+    position:absolute; left:14px; top:9px; font-size:8px; letter-spacing:3px;
+    color:rgba(255,255,255,.32); font-weight:800;
+  }
+  .obj{ position:absolute; cursor:grab; touch-action:none; }
+  .obj svg{ width:100%; height:auto; display:block; filter:drop-shadow(0 7px 7px rgba(0,0,0,.5)); transition:filter .15s, transform .15s; }
+  .obj.dragging{ cursor:grabbing; }
+  .obj.dragging svg{ filter:drop-shadow(0 18px 16px rgba(0,0,0,.55)); transform:scale(1.07); }
+  #pencilObj{ left:26%; bottom:16px; width:min(290px,46%); transform:rotate(-3deg); }
+  #labelsObj{ left:42%; top:22px; width:104px; transform:rotate(-3deg); }
+  #tapeObj{ right:24%; top:24px; width:76px; transform:rotate(9deg); }
+  #battObj{ right:4%; bottom:18px; width:118px; transform:rotate(-7deg); }
+  #envObj{ right:3%; top:16px; width:126px; transform:rotate(4deg); }
+
+  /* radio: an appliance, not draggable */
+  .appliance{ position:absolute; left:3%; top:22px; width:210px; }
+  .appliance svg{ width:100%; height:auto; display:block; filter:drop-shadow(0 8px 8px rgba(0,0,0,.5)); }
+  .r-power{ position:absolute; right:5%; top:6%; width:18%; height:24%; cursor:pointer; }
+  #radioDial{
+    position:absolute; left:47%; top:26%; width:47%; height:26%;
+    -webkit-appearance:none; appearance:none; opacity:0; cursor:ew-resize; margin:0;
+  }
+  @media (max-width:640px){
+    .desk{ height:420px; }
+    .appliance{ width:170px; }
+    #envObj{ width:104px; }
+    #labelsObj{ left:auto; right:8%; top:118px; }
+    #tapeObj{ right:44%; top:132px; }
+    #pencilObj{ left:5%; bottom:78px; width:88%; }
+    #battObj{ bottom:12px; right:6%; }
+  }
+
+  .toast{
+    position:fixed; left:50%; bottom:24px; transform:translateX(-50%) translateY(80px);
+    background:#20242e; color:#e8ebf2; font-size:12px; letter-spacing:1px; padding:10px 18px;
+    border-radius:20px; border:1px solid #3a4150; box-shadow:0 8px 20px rgba(0,0,0,.5);
+    transition:transform .25s; pointer-events:none; z-index:200; max-width:86vw; text-align:center;
+  }
+  .toast.show{ transform:translateX(-50%) translateY(0); }
+
+  .label-editor{
+    position:fixed; inset:0; display:none; align-items:center; justify-content:center;
+    background:rgba(0,0,0,.55); z-index:150;
+  }
+  .label-editor.show{ display:flex; }
+  .label-card{
+    background:#f7efdd; border-radius:8px; padding:18px; width:min(320px,86vw);
+    box-shadow:0 18px 40px rgba(0,0,0,.6); transform:rotate(-1.5deg);
+  }
+  .label-card h4{ margin:0 0 10px; font-size:10px; letter-spacing:3px; color:#8a715c; }
+  .label-card input{
+    width:100%; border:none; border-bottom:2px solid rgba(0,0,0,.25); background:transparent;
+    font-family:"Bradley Hand","Segoe Script","Comic Sans MS",cursive; font-size:20px; color:#2e2317;
+    padding:6px 2px; outline:none;
+  }
+  .label-card .lc-actions{ display:flex; gap:8px; margin-top:14px; justify-content:flex-end; }
+  .label-card button{
+    border:1px solid #a34400; background:linear-gradient(180deg,#ff8c33,#d95a00); color:#fff;
+    border-radius:6px; padding:7px 14px; font-weight:800; font-size:11px; letter-spacing:1px; cursor:pointer;
+  }
+  .label-card button.ghost{ background:transparent; color:#8a715c; border-color:#c9b49a; }
+</style>
+</head>
+<body>
+<div class="scene">
+<div class="walkman">
+  <div class="topbar">
+    <span class="brand">SUPERSOUND <em>stereo</em></span>
+    <span class="model">WM-26 · AUTO STOP</span>
+    <div class="batt"><i id="battFill"></i></div>
+    <span class="led" id="led"></span>
+  </div>
+
+  <div class="main">
+  <div class="left">
+  <div class="deck">
+    <div class="deck-head"><span>CASSETTE</span><span>METAL · CrO₂ · NORMAL</span></div>
+    <div class="deck-window">
+      <div class="empty-msg" id="emptyMsg">NO CASSETTE<small>press a tape below to insert it</small></div>
+      <div class="holder" id="holder"></div>
+      <div class="door-glass"></div>
+      <div class="scrub-hint"><span>◀ hold to rewind</span><span>hold to fast-fwd ▶</span></div>
+    </div>
+  </div>
+  </div><!--/left-->
+
+  <div class="right">
+  <div class="counter-row">
+    <div class="counter" id="counter">000</div>
+    <div class="time" id="timeLbl">--:-- / --:--</div>
+    <div class="mode-lbl" id="modeLbl">STOP</div>
+    <button class="btn-rec" id="btnRec">REC</button>
+  </div>
+
+  <div class="controls">
+    <button class="btn" id="btnRew"><span class="sym">◀◀</span><span class="lbl">REW</span></button>
+    <button class="btn play" id="btnPlay"><span class="sym">▶</span><span class="lbl">PLAY</span></button>
+    <button class="btn" id="btnFF"><span class="sym">▶▶</span><span class="lbl">F.FWD</span></button>
+    <button class="btn" id="btnStop"><span class="sym">■</span><span class="lbl">STOP</span></button>
+    <button class="btn" id="btnPause"><span class="sym">❚❚</span><span class="lbl">PAUSE</span></button>
+    <button class="btn eject" id="btnEject"><span class="sym">⏏</span><span class="lbl">EJECT</span></button>
+  </div>
+
+  <div class="volume-row">
+    <span class="vlbl">VOLUME</span>
+    <input type="range" class="vol" id="vol" min="0" max="100" value="80">
+  </div>
+
+  <div class="switches">
+    <span>DOLBY NR</span><div class="sw on" id="sw1"><i></i></div>
+    <span>TAPE SEL · NORM / CrO₂</span><div class="sw" id="sw2"><i></i></div>
+  </div>
+  </div><!--/right-->
+  </div><!--/main-->
+
+  <div class="shelf-area">
+    <div class="shelf-head">
+      <span>TAPE CASE</span>
+      <button id="addBtn">＋ ADD MUSIC</button>
+    </div>
+    <div class="shelf" id="shelf"></div>
+  </div>
+
+  <div class="hint">pencil: write on labels &amp; twist in a reel to wind · stickers: fresh label · scotch tape: unlock REC · envelope: send a mixtape</div>
+</div>
+
+<!-- ============ the desk ============ -->
+<div class="desk">
+  <span class="desk-label">DESK · DRAG THE OBJECTS</span>
+
+  <!-- FM radio (appliance) -->
+  <div class="appliance" id="radioObj" title="FM radio — power on, tune the dial, press REC to tape from it">
+    <svg viewBox="0 0 210 122" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="rbody" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#efe4cc"/><stop offset=".7" stop-color="#d9c9a6"/><stop offset="1" stop-color="#bda87e"/>
+        </linearGradient>
+      </defs>
+      <line x1="150" y1="18" x2="196" y2="2" stroke="#8a909c" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="196" cy="2" r="2.6" fill="#c6ccd6"/>
+      <rect x="4" y="16" width="202" height="102" rx="12" fill="url(#rbody)" stroke="#8a7350" stroke-width="1.5"/>
+      <rect x="6" y="18" width="198" height="14" rx="7" fill="rgba(90,60,20,.25)"/>
+      <!-- speaker -->
+      <circle cx="52" cy="70" r="34" fill="#4a3b28"/>
+      <circle cx="52" cy="70" r="34" fill="none" stroke="rgba(0,0,0,.35)" stroke-width="2"/>
+      <g stroke="#2e2317" stroke-width="2">
+        <line x1="24" y1="60" x2="80" y2="60"/><line x1="21" y1="70" x2="83" y2="70"/>
+        <line x1="24" y1="80" x2="80" y2="80"/><line x1="30" y1="50" x2="74" y2="50"/>
+        <line x1="30" y1="90" x2="74" y2="90"/>
+      </g>
+      <!-- power button + led -->
+      <circle cx="182" cy="24" r="7" fill="#c6ccd6" stroke="#767d8a"/>
+      <circle id="radioLed" cx="164" cy="24" r="3.2" fill="#4a2018"/>
+      <!-- dial window -->
+      <rect x="100" y="46" width="98" height="30" rx="4" fill="#1c1610" stroke="#8a7350"/>
+      <g stroke="rgba(255,220,150,.4)" stroke-width="1">
+        <line x1="108" y1="52" x2="108" y2="60"/><line x1="126" y1="52" x2="126" y2="60"/>
+        <line x1="144" y1="52" x2="144" y2="60"/><line x1="162" y1="52" x2="162" y2="60"/>
+        <line x1="180" y1="52" x2="180" y2="60"/><line x1="192" y1="52" x2="192" y2="60"/>
+      </g>
+      <text x="108" y="49" font-size="6" fill="rgba(255,220,150,.5)" font-family="Arial">88</text>
+      <text x="186" y="49" font-size="6" fill="rgba(255,220,150,.5)" font-family="Arial">108</text>
+      <line id="radioNeedle" x1="134" y1="48" x2="134" y2="74" stroke="#ff5a3c" stroke-width="2"/>
+      <text id="radioFreqT" x="149" y="88" text-anchor="middle" font-family="Courier New, monospace" font-size="10" font-weight="bold" fill="#ffdca8">94.8 FM</text>
+      <text x="149" y="110" text-anchor="middle" font-family="Arial" font-size="8" letter-spacing="2" fill="#6a5638" font-weight="bold">SUPERSOUND FM-2</text>
+    </svg>
+    <div class="r-power" id="radioPower"></div>
+    <input type="range" id="radioDial" min="880" max="1080" value="948">
+  </div>
+
+  <!-- sheet of blank label stickers -->
+  <div class="obj" id="labelsObj" title="label stickers — drop one on a cassette, then write with the pencil">
+    <svg viewBox="0 0 110 92" xmlns="http://www.w3.org/2000/svg">
+      <rect x="8" y="14" width="92" height="34" rx="3" fill="#e6dcc4" transform="rotate(-4 54 31)"/>
+      <rect x="6" y="10" width="94" height="34" rx="3" fill="#efe6d0" transform="rotate(2 53 27)"/>
+      <rect x="4" y="4" width="98" height="36" rx="3" fill="#f7efdd" stroke="rgba(0,0,0,.25)"/>
+      <rect x="4" y="4" width="98" height="10" rx="3" fill="#e8b64a"/>
+      <line x1="12" y1="24" x2="94" y2="24" stroke="rgba(0,0,0,.2)"/>
+      <line x1="12" y1="33" x2="94" y2="33" stroke="rgba(0,0,0,.2)"/>
+      <text x="53" y="62" text-anchor="middle" font-family="Arial" font-size="8" letter-spacing="1" fill="rgba(255,255,255,.45)" font-weight="bold">BLANK LABELS</text>
+      <text x="53" y="74" text-anchor="middle" font-family="Arial" font-size="7" fill="rgba(255,255,255,.3)">peel &amp; stick</text>
+    </svg>
+  </div>
+
+  <!-- scotch tape -->
+  <div class="obj" id="tapeObj" title="sticky tape — drop on a cassette to cover the record-protect notch">
+    <svg viewBox="0 0 110 132" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="troll" cx=".4" cy=".35" r=".85">
+          <stop offset="0" stop-color="#eef4f6" stop-opacity=".95"/>
+          <stop offset=".7" stop-color="#c4d6dc" stop-opacity=".92"/>
+          <stop offset="1" stop-color="#9fb4bc" stop-opacity=".92"/>
+        </radialGradient>
+      </defs>
+      <circle cx="55" cy="52" r="44" fill="url(#troll)" stroke="rgba(0,0,0,.22)"/>
+      <circle cx="55" cy="52" r="36" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1"/>
+      <path d="M22 32 A40 40 0 0 1 58 13" stroke="rgba(255,255,255,.75)" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <circle cx="55" cy="52" r="19" fill="#f7f2e4" stroke="#b8a780" stroke-width="4"/>
+      <circle cx="55" cy="52" r="11" fill="#2c211b"/>
+      <path d="M91 78 L103 122 L81 126 L74 90 Z" fill="#dfe9ec" opacity=".82"/>
+      <path d="M81 126 L103 122 L99 117 L94 123 L90 117 L85 123 Z" fill="#dfe9ec" opacity=".82"/>
+      <line x1="88" y1="86" x2="96" y2="116" stroke="rgba(255,255,255,.5)" stroke-width="2"/>
+    </svg>
+  </div>
+
+  <!-- envelope: share the mixtape -->
+  <div class="obj" id="envObj" title="envelope — drop on a cassette to send the mixtape (downloads the audio)">
+    <svg viewBox="0 0 130 92" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="10" width="122" height="76" rx="5" fill="#d9b98a" stroke="#a88350"/>
+      <path d="M4 14 L65 52 L126 14" fill="none" stroke="#a88350" stroke-width="2"/>
+      <rect x="98" y="16" width="20" height="16" fill="#f2ead7" stroke="#a88350"/>
+      <path d="M101 20 l6 5 6-5 M101 27 h12" stroke="#c0271c" stroke-width="1.4" fill="none"/>
+      <text x="20" y="70" font-family="'Bradley Hand','Segoe Script',cursive" font-size="12" fill="#5a3c1e">for you ♡</text>
+    </svg>
+  </div>
+
+  <!-- pencil -->
+  <div class="obj" id="pencilObj" title="pencil — write on labels, twist in a reel to wind or fix chewed tape">
+    <svg viewBox="0 0 320 44" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="pbody" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#ffd75e"/><stop offset=".34" stop-color="#f5b91e"/>
+          <stop offset=".67" stop-color="#d99a0b"/><stop offset="1" stop-color="#b57e06"/>
+        </linearGradient>
+        <linearGradient id="pferr" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#f2f4f8"/><stop offset=".5" stop-color="#aab1bd"/><stop offset="1" stop-color="#7d8494"/>
+        </linearGradient>
+        <linearGradient id="pwood" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#f0d7ae"/><stop offset="1" stop-color="#d1ab74"/>
+        </linearGradient>
+      </defs>
+      <rect x="44" y="11" width="212" height="22" rx="2" fill="url(#pbody)"/>
+      <line x1="44" y1="18" x2="256" y2="18" stroke="rgba(0,0,0,.16)"/>
+      <line x1="44" y1="26" x2="256" y2="26" stroke="rgba(255,255,255,.28)"/>
+      <text x="150" y="25" text-anchor="middle" font-family="Arial" font-size="8" letter-spacing="2" fill="rgba(90,60,0,.75)" font-weight="bold">SUPERSOUND · HB 2</text>
+      <path d="M44 11 L14 19 L14 25 L44 33 Z" fill="url(#pwood)"/>
+      <path d="M44 11 L14 19 M14 25 L44 33" stroke="rgba(0,0,0,.14)" fill="none"/>
+      <path d="M14 19 L2 22 L14 25 Z" fill="#3a3f47"/>
+      <rect x="256" y="10" width="16" height="24" rx="2" fill="url(#pferr)"/>
+      <line x1="261" y1="10" x2="261" y2="34" stroke="rgba(0,0,0,.28)"/>
+      <line x1="267" y1="10" x2="267" y2="34" stroke="rgba(0,0,0,.28)"/>
+      <rect x="272" y="11" width="30" height="22" rx="9" fill="#e89a9a"/>
+      <rect x="274" y="12" width="26" height="8" rx="4" fill="rgba(255,255,255,.28)"/>
+    </svg>
+  </div>
+
+  <!-- spare AA batteries -->
+  <div class="obj" id="battObj" title="fresh AA batteries — drag onto the walkman when it runs low">
+    <svg viewBox="0 0 130 64" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="cell" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#f2f4f8"/><stop offset=".45" stop-color="#aab1bd"/><stop offset="1" stop-color="#6f7683"/>
+        </linearGradient>
+      </defs>
+      <g transform="rotate(-2 60 18)">
+        <rect x="8" y="6" width="100" height="21" rx="10" fill="url(#cell)" stroke="#5c6370"/>
+        <rect x="8" y="6" width="26" height="21" rx="10" fill="#c78a3c"/>
+        <rect x="108" y="12" width="5" height="9" rx="2" fill="#c6ccd6" stroke="#767d8a"/>
+        <text x="66" y="20" text-anchor="middle" font-family="Arial" font-size="8" font-weight="bold" fill="#33383f" letter-spacing="1">AA SUPERCELL</text>
+      </g>
+      <g transform="rotate(2 66 46)">
+        <rect x="16" y="34" width="100" height="21" rx="10" fill="url(#cell)" stroke="#5c6370"/>
+        <rect x="16" y="34" width="26" height="21" rx="10" fill="#c78a3c"/>
+        <rect x="116" y="40" width="5" height="9" rx="2" fill="#c6ccd6" stroke="#767d8a"/>
+        <text x="74" y="48" text-anchor="middle" font-family="Arial" font-size="8" font-weight="bold" fill="#33383f" letter-spacing="1">AA SUPERCELL</text>
+      </g>
+    </svg>
+  </div>
+</div>
+</div><!--/scene-->
+
+<div class="label-editor" id="labelEditor">
+  <div class="label-card">
+    <h4>WRITE ON THE LABEL ✏️</h4>
+    <input id="labelInput" maxlength="24" placeholder="tape title…">
+    <div class="lc-actions">
+      <button class="ghost" id="labelCancel">CANCEL</button>
+      <button id="labelSave">WRITE</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<input type="file" id="filePick" accept="audio/*" multiple hidden>
+<audio id="audio" playsinline></audio>
+
+<script>
+"use strict";
+/* ============ state ============ */
+const audio = document.getElementById('audio');
+audio.preservesPitch = false;
+if ('webkitPreservesPitch' in audio) audio.webkitPreservesPitch = false;
+
+const $ = id => document.getElementById(id);
+const holder=$('holder'), emptyMsg=$('emptyMsg'), shelf=$('shelf'),
+      counter=$('counter'), timeLbl=$('timeLbl'), modeLbl=$('modeLbl'), led=$('led'),
+      toast=$('toast'), battFill=$('battFill');
+
+const LABEL_COLORS=['#e8b64a','#d97b6c','#6aa5c9','#8fb974','#b78ec4','#e09a5a','#8b93c9'];
+let tapes=[];
+let loaded=null;
+let mode='stop';               // stop|play|pause|ff|rew|rec
+let seekTimer=null, flutterTimer=null;
+let animBusy=false;
+let batt=0.82;                 // battery level 0..1
+let chewGuard=0, chewFixAcc=0;
+let recStartPos=0, recT0=0;
+
+/* ============ audio ctx / sfx ============ */
+let ctx=null, noiseBuf=null, hissNode=null, squealNode=null;
+function AC(){
+  if(!ctx){ ctx=new (window.AudioContext||window.webkitAudioContext)(); }
+  if(ctx.state==='suspended') ctx.resume();
+  return ctx;
+}
+/* NOTE: the music plays straight through the <audio> element. Routing it through
+   WebAudio outputs silence on file:// pages (cross-origin rules). WebAudio is
+   used only for sfx and the radio. */
+function getNoise(){
+  const c=AC();
+  if(!noiseBuf){
+    noiseBuf=c.createBuffer(1, c.sampleRate*2, c.sampleRate);
+    const d=noiseBuf.getChannelData(0);
+    for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1;
+  }
+  return noiseBuf;
+}
+function burst(freq, dur, gain, type){
+  try{
+    const c=AC(), s=c.createBufferSource(); s.buffer=getNoise();
+    const f=c.createBiquadFilter(); f.type=type||'bandpass'; f.frequency.value=freq; f.Q.value=1.2;
+    const g=c.createGain();
+    g.gain.setValueAtTime(gain, c.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime+dur);
+    s.connect(f); f.connect(g); g.connect(c.destination);
+    s.start(); s.stop(c.currentTime+dur+0.02);
+  }catch(e){}
+}
+const sfxClick =()=>burst(2400,0.035,0.25);
+const sfxClunk =()=>{ burst(300,0.09,0.5,'lowpass'); setTimeout(()=>burst(180,0.12,0.35,'lowpass'),40); };
+function hissStart(){
+  if(hissNode) return;
+  try{
+    const c=AC(), s=c.createBufferSource(); s.buffer=getNoise(); s.loop=true;
+    const f=c.createBiquadFilter(); f.type='lowpass'; f.frequency.value=6000;
+    const g=c.createGain(); g.gain.value=0.006;
+    s.connect(f); f.connect(g); g.connect(c.destination); s.start();
+    hissNode={s,g};
+  }catch(e){}
+}
+function hissStop(){ if(hissNode){ try{hissNode.s.stop();}catch(e){} hissNode=null; } }
+function squealStart(){
+  if(squealNode) return;
+  try{
+    const c=AC(), s=c.createBufferSource(); s.buffer=getNoise(); s.loop=true;
+    const f=c.createBiquadFilter(); f.type='bandpass'; f.frequency.value=2800; f.Q.value=6;
+    const g=c.createGain(); g.gain.value=0.07;
+    s.connect(f); f.connect(g); g.connect(c.destination); s.start();
+    squealNode={s,f};
+  }catch(e){}
+}
+function squealStop(){ if(squealNode){ try{squealNode.s.stop();}catch(e){} squealNode=null; } }
+function vibrate(ms){ if(navigator.vibrate) navigator.vibrate(ms); }
+
+/* ============ cassette SVG ============ */
+function cassetteSVG(tape){
+  return `
+  <svg viewBox="0 0 300 190" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="shell" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#3d4048"/><stop offset=".08" stop-color="#2c2f36"/>
+        <stop offset=".85" stop-color="#1c1e24"/><stop offset="1" stop-color="#101217"/>
+      </linearGradient>
+      <linearGradient id="lab" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#f7efdd"/><stop offset="1" stop-color="#e6d9be"/>
+      </linearGradient>
+      <radialGradient id="tapepack" cx=".5" cy=".5" r=".5">
+        <stop offset="0" stop-color="#5a4330"/><stop offset=".55" stop-color="#3c2c1e"/>
+        <stop offset=".92" stop-color="#241811"/><stop offset="1" stop-color="#191009"/>
+      </radialGradient>
+      <linearGradient id="labshine" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#ffffff" stop-opacity=".5"/><stop offset=".12" stop-color="#ffffff" stop-opacity="0"/>
+      </linearGradient>
+      <clipPath id="win"><rect x="68" y="40" width="164" height="56" rx="28"/></clipPath>
+    </defs>
+    <rect x="2" y="2" width="296" height="186" rx="10" fill="url(#shell)" stroke="#0a0b0e" stroke-width="2"/>
+    <rect x="4" y="4" width="292" height="182" rx="9" fill="none" stroke="rgba(255,255,255,.14)" stroke-width="1"/>
+    <rect x="58" y="2" width="11" height="6" fill="#07080b"/>
+    <rect x="231" y="2" width="11" height="6" fill="#07080b"/>
+    ${tape.taped?`
+      <rect x="50" y="-1" width="27" height="11" rx="2" fill="#e6d9b8" opacity=".88" transform="rotate(-2 63 4)"/>
+      <rect x="223" y="-1" width="27" height="11" rx="2" fill="#e6d9b8" opacity=".88" transform="rotate(1.5 236 4)"/>`:''}
+    ${[0,1,2,3,4,5].map(i=>`
+      <rect x="8" y="${58+i*10}" width="10" height="2.5" rx="1" fill="rgba(0,0,0,.5)"/>
+      <rect x="282" y="${58+i*10}" width="10" height="2.5" rx="1" fill="rgba(0,0,0,.5)"/>`).join('')}
+    ${[[14,14],[286,14],[14,150],[286,150],[150,180]].map(p=>`
+      <circle cx="${p[0]}" cy="${p[1]}" r="4.5" fill="#14161a" stroke="#4c525e" stroke-width="1.2"/>
+      <line x1="${p[0]-2.4}" y1="${p[1]}" x2="${p[0]+2.4}" y2="${p[1]}" stroke="#666d7a" stroke-width="1"/>`).join('')}
+    <rect x="26" y="12" width="248" height="100" rx="4" fill="url(#lab)" stroke="rgba(0,0,0,.35)" stroke-width=".8"/>
+    <rect x="26" y="12" width="248" height="22" rx="4" fill="${tape.color}"/>
+    <rect x="26" y="30" width="248" height="4" fill="${tape.color}" opacity=".55"/>
+    <rect x="26" y="12" width="248" height="100" rx="4" fill="url(#labshine)"/>
+    <circle cx="42" cy="23" r="8" fill="rgba(255,255,255,.85)" stroke="rgba(0,0,0,.4)"/>
+    <text x="42" y="27" text-anchor="middle" font-family="Arial" font-size="11" font-weight="bold" fill="#2b2417">A</text>
+    <text x="156" y="28" text-anchor="middle" font-family="'Bradley Hand','Segoe Script','Comic Sans MS',cursive"
+          font-size="15" font-weight="bold" fill="#2e2317">${esc(tape.name).slice(0,24)}</text>
+    <line x1="40" y1="106" x2="260" y2="106" stroke="rgba(0,0,0,.18)" stroke-width="1"/>
+    <text x="44" y="103" font-family="'Bradley Hand','Segoe Script',cursive" font-size="9" fill="rgba(46,35,23,.6)">${tape.demo?'summer mix · do not record over!!':'side A · rec from claude'}</text>
+    <rect x="68" y="40" width="164" height="56" rx="28" fill="#0d0f13" stroke="rgba(0,0,0,.6)" stroke-width="2"/>
+    <g clip-path="url(#win)">
+      <circle class="spoolL" cx="103" cy="68" r="40" fill="url(#tapepack)"/>
+      <circle class="spoolR" cx="197" cy="68" r="20" fill="url(#tapepack)"/>
+      <circle cx="103" cy="68" r="40" fill="none" stroke="rgba(0,0,0,.4)" stroke-width=".6"/>
+      <rect x="68" y="40" width="164" height="8" fill="rgba(255,255,255,.05)"/>
+    </g>
+    <rect x="68" y="40" width="164" height="56" rx="28" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="1"/>
+    <g class="reelL" style="transform-origin:103px 68px">
+      <circle cx="103" cy="68" r="15" fill="#e9ecf2" stroke="#9aa1ad"/>
+      <circle cx="103" cy="68" r="5" fill="#c6ccd6" stroke="#8a909c"/>
+      ${reelTeeth(103,68)}
+    </g>
+    <g class="reelR" style="transform-origin:197px 68px">
+      <circle cx="197" cy="68" r="15" fill="#e9ecf2" stroke="#9aa1ad"/>
+      <circle cx="197" cy="68" r="5" fill="#c6ccd6" stroke="#8a909c"/>
+      ${reelTeeth(197,68)}
+    </g>
+    <text x="150" y="128" text-anchor="middle" font-family="Arial" font-size="8" letter-spacing="4" fill="rgba(255,255,255,.35)">STEREO · POSITION NORMAL · 90 MIN</text>
+    <path d="M52 138 h196 l-16 34 h-164 z" fill="#14161c" stroke="#3a4048" stroke-width="1"/>
+    <circle cx="88" cy="158" r="5.5" fill="#0a0c10" stroke="#3a4048"/>
+    <circle cx="212" cy="158" r="5.5" fill="#0a0c10" stroke="#3a4048"/>
+    <circle cx="122" cy="160" r="3" fill="#0a0c10" stroke="#3a4048"/>
+    <circle cx="178" cy="160" r="3" fill="#0a0c10" stroke="#3a4048"/>
+    <rect x="138" y="150" width="24" height="13" rx="2" fill="#0a0c10" stroke="#3a4048"/>
+    <rect x="145" y="153" width="10" height="7" rx="1" fill="#5a4330"/>
+    ${tape.chewed?`
+    <g stroke="#3c2c1e" stroke-width="3" fill="none" opacity=".95" stroke-linecap="round">
+      <path class="chewP" d="M118 166 q-10 10 2 15 t-8 9"/>
+      <path class="chewP" d="M150 164 q12 9 -2 16 t10 10"/>
+      <path class="chewP" d="M178 166 q-8 8 6 13 t-6 10"/>
+      <path class="chewP" d="M134 168 q6 12 -6 16"/>
+    </g>
+    <text class="chewT" x="150" y="146" text-anchor="middle" font-family="Arial" font-size="9" font-weight="bold" fill="#e07050" letter-spacing="2">TAPE CHEWED! — PENCIL IN A REEL, TWIST!</text>`:''}
+  </svg>`;
+}
+function reelTeeth(cx,cy){
+  let out='';
+  for(let i=0;i<6;i++){
+    out+=`<rect x="${cx-2.2}" y="${cy-14.5}" width="4.4" height="8" rx="1.6" fill="#2a2e37"
+      transform="rotate(${i*60} ${cx} ${cy})"/>`;
+  }
+  return out;
+}
+function esc(s){ return s.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* ============ shelf ============ */
+function renderShelf(){
+  shelf.innerHTML='';
+  tapes.forEach(t=>{
+    if(loaded && loaded.id===t.id) return;
+    const el=document.createElement('div');
+    el.className='mini';
+    el.dataset.id=t.id;
+    const sub=t.chewed?'CHEWED · FIX WITH PENCIL'
+      :(t.demo?'DEMO · SYNTH MIX'
+      :(t.blank?'BLANK · READY TO REC'
+      :(t.taped?'C-90 · REC UNLOCKED':'C-90 · SIDE A')));
+    el.innerHTML=`<div class="mlabel">
+        <div class="mband" style="background:${t.color}">${esc(t.name)}</div>
+        <div class="mwin"><i></i><i></i></div>
+      </div>
+      <div class="msub${t.chewed?' warn':''}">${sub}</div>`;
+    el.addEventListener('click',()=>insertTape(t));
+    shelf.appendChild(el);
+  });
+}
+
+/* ============ toast ============ */
+let toastT=null;
+function say(msg){
+  toast.textContent=msg; toast.classList.add('show');
+  clearTimeout(toastT); toastT=setTimeout(()=>toast.classList.remove('show'),2600);
+}
+
+/* ============ synthesized audio: demo tape, radio stations, blank, wav ============ */
+function songInto(oc, master, secs, variant){
+  const bpm=variant===1?118:92, beat=60/bpm;
+  const chordSets=[
+    [[48,60,64,67],[45,57,60,64],[41,53,57,60],[43,55,59,62]],
+    [[50,62,66,69],[45,57,61,64],[47,59,62,66],[43,55,59,62]]
+  ];
+  const chords=chordSets[variant===1?1:0];
+  const hz=m=>440*Math.pow(2,(m-69)/12);
+  function note(type, midi, t, dur, vol){
+    const o=oc.createOscillator(); o.type=type; o.frequency.value=hz(midi);
+    const g=oc.createGain();
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.exponentialRampToValueAtTime(vol,t+0.015);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    o.connect(g); g.connect(master); o.start(t); o.stop(t+dur+0.05);
+  }
+  const bars=Math.floor(secs/(beat*4));
+  const seq=variant===1?[3,1,2,3,2,1,3,2]:[1,2,3,2,1,3,2,3];
+  const lead=variant===1?'sawtooth':'square';
+  for(let bar=0; bar<bars; bar++){
+    const ch=chords[bar%4], t0=bar*4*beat;
+    note('triangle', ch[0]-12, t0, beat*3.8, 0.30);
+    for(let e=0; e<8; e++) note(lead, ch[seq[e]]+12, t0+e*beat/2, beat*0.45, 0.055);
+    for(let b=0;b<4;b++){
+      const t=t0+b*beat+beat/2;
+      const s=oc.createBufferSource();
+      const sr=oc.sampleRate;
+      const nb=oc.createBuffer(1,Math.floor(sr*0.05),sr), d=nb.getChannelData(0);
+      for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*(1-i/d.length);
+      s.buffer=nb;
+      const f=oc.createBiquadFilter(); f.type='highpass'; f.frequency.value=6000;
+      const g=oc.createGain(); g.gain.value=0.05;
+      s.connect(f); f.connect(g); g.connect(master); s.start(t);
+    }
+  }
+  return bars*4*beat;
+}
+async function buildDemoURL(){
+  const sr=44100, secs=48;
+  const oc=new OfflineAudioContext(2, sr*secs, sr);
+  const master=oc.createGain(); master.gain.value=0.8;
+  const lp=oc.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=3800;
+  master.connect(lp); lp.connect(oc.destination);
+  songInto(oc, master, secs-2, 0);
+  const buf=await oc.startRendering();
+  return URL.createObjectURL(new Blob([wavBytes(buf)],{type:'audio/wav'}));
+}
+async function renderStationBuffer(variant){
+  const sr=AC().sampleRate;
+  const bpm=variant===1?118:92, beat=60/bpm, secs=8*4*beat;
+  const oc=new OfflineAudioContext(1, Math.ceil(sr*secs), sr);
+  const master=oc.createGain(); master.gain.value=0.7;
+  const lp=oc.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=3200;
+  master.connect(lp); lp.connect(oc.destination);
+  songInto(oc, master, secs, variant);
+  return oc.startRendering();
+}
+function wavBytes(buf){
+  const ch=buf.numberOfChannels, sr=buf.sampleRate, n=buf.length;
+  const bytes=44+n*ch*2, ab=new ArrayBuffer(bytes), v=new DataView(ab);
+  const wstr=(o,s)=>{ for(let i=0;i<s.length;i++) v.setUint8(o+i,s.charCodeAt(i)); };
+  wstr(0,'RIFF'); v.setUint32(4,bytes-8,true); wstr(8,'WAVE'); wstr(12,'fmt ');
+  v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,ch,true);
+  v.setUint32(24,sr,true); v.setUint32(28,sr*ch*2,true); v.setUint16(32,ch*2,true);
+  v.setUint16(34,16,true); wstr(36,'data'); v.setUint32(40,n*ch*2,true);
+  let off=44;
+  const chans=[]; for(let c=0;c<ch;c++) chans.push(buf.getChannelData(c));
+  for(let i=0;i<n;i++) for(let c=0;c<ch;c++){
+    let s=Math.max(-1,Math.min(1,chans[c][i]));
+    v.setInt16(off, s<0 ? s*0x8000 : s*0x7FFF, true); off+=2;
+  }
+  return ab;
+}
+function makeBlankURL(secs){
+  const sr=44100, n=sr*secs;
+  const bytes=44+n*2, ab=new ArrayBuffer(bytes), v=new DataView(ab);
+  const wstr=(o,s)=>{ for(let i=0;i<s.length;i++) v.setUint8(o+i,s.charCodeAt(i)); };
+  wstr(0,'RIFF'); v.setUint32(4,bytes-8,true); wstr(8,'WAVE'); wstr(12,'fmt ');
+  v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,1,true);
+  v.setUint32(24,sr,true); v.setUint32(28,sr*2,true); v.setUint16(32,2,true);
+  v.setUint16(34,16,true); wstr(36,'data'); v.setUint32(40,n*2,true);
+  return URL.createObjectURL(new Blob([ab],{type:'audio/wav'}));
+}
+
+/* ============ battery ============ */
+function battFactor(){
+  if(batt<=0) return 0;
+  return batt>0.35 ? 1 : 0.72+0.28*(batt/0.35);
+}
+function updateBatt(){
+  battFill.style.width=(batt*98)+'%';
+  battFill.className = batt<0.15?'low':(batt<0.4?'mid':'');
+}
+
+/* ============ transport ============ */
+function tapeFxOn(){ return !$('sw1').classList.contains('on'); }
+function setMode(m){
+  mode=m;
+  modeLbl.textContent={stop:'STOP',play:'PLAY',pause:'PAUSE',ff:'F.FWD',rew:'REW',rec:'REC ●'}[m];
+  led.className='led'+(m==='play'?' on':(m==='pause'?' pause':(m==='rec'?' rec':'')));
+  $('btnRec').classList.toggle('latched', m==='rec');
+  $('btnPlay').classList.toggle('latched', m==='play'||m==='pause');
+  $('btnPause').classList.toggle('latched', m==='pause');
+  $('btnFF').classList.toggle('latched', m==='ff');
+  $('btnRew').classList.toggle('latched', m==='rew');
+}
+function clearSeek(){ if(seekTimer){ clearInterval(seekTimer); seekTimer=null; } squealStop(); }
+function stopFlutter(){ if(flutterTimer){ clearInterval(flutterTimer); flutterTimer=null; } audio.playbackRate=1; }
+function startFlutter(){
+  stopFlutter();
+  let t=0;
+  flutterTimer=setInterval(()=>{
+    t+=0.05;
+    let r=battFactor();
+    if(tapeFxOn()) r*=1 + 0.0018*Math.sin(t*Math.PI);
+    audio.playbackRate=Math.max(0.5, r);
+  },50);
+}
+
+async function insertTape(tape){
+  if(animBusy) return;
+  if(loaded){ say('EJECT the current tape first'); sfxClick(); return; }
+  AC(); vibrate(15);
+  if(tape.demo && !tape.url){
+    say('winding a fresh demo tape…');
+    try{ tape.url=await buildDemoURL(); }
+    catch(e){ say('could not build demo tape'); return; }
+  }
+  if(tape.blank && !tape.url){
+    say('loading a blank tape…');
+    try{ tape.url=makeBlankURL(180); }
+    catch(e){ say('could not create blank tape'); return; }
+  }
+  loaded=tape;
+  audio.src=tape.url;
+  holder.innerHTML=cassetteSVG(tape);
+  emptyMsg.style.display='none';
+  animBusy=true;
+  holder.classList.remove('ejecting');
+  holder.classList.add('inserting');
+  sfxClunk();
+  setTimeout(()=>{ holder.classList.remove('inserting'); animBusy=false; sfxClick(); },560);
+  renderShelf();
+  setMode('stop');
+  if(tape.chewed) say('this tape is chewed — put the pencil in a reel and twist to fix it');
+}
+function ejectTape(){
+  sfxClick(); vibrate(20);
+  if(!loaded || animBusy) return;
+  doStop(false);
+  animBusy=true;
+  holder.classList.add('ejecting');
+  sfxClunk();
+  setTimeout(()=>{
+    holder.classList.remove('ejecting');
+    holder.innerHTML='';
+    emptyMsg.style.display='flex';
+    loaded=null; animBusy=false;
+    audio.removeAttribute('src'); audio.load();
+    counter.textContent='000'; timeLbl.textContent='--:-- / --:--';
+    renderShelf(); setMode('stop');
+  },460);
+}
+async function doPlay(){
+  sfxClick(); vibrate(12);
+  if(!loaded){ say('no cassette — insert a tape first'); return; }
+  if(loaded.chewed){ say('the tape is chewed — wind it back in with the pencil'); return; }
+  if(batt<=0){ say('batteries are dead — drag the fresh AAs from the desk onto the walkman'); return; }
+  clearSeek();
+  if(mode==='play') return;
+  try{ await AC().resume(); }catch(e){}
+  try{
+    await audio.play();
+    setMode('play');
+    startFlutter();
+    if(tapeFxOn()) hissStart();
+  }catch(err){
+    const n=err && err.name;
+    if(n==='NotSupportedError') say('this audio format is not supported — try MP3 or M4A');
+    else if(n==='NotAllowedError') say('browser blocked audio — tap PLAY once more');
+    else say('could not start: '+(n||'unknown error'));
+  }
+}
+function doPause(){
+  sfxClick(); vibrate(12);
+  if(!loaded) return;
+  if(mode==='play'){ audio.pause(); hissStop(); stopFlutter(); setMode('pause'); }
+  else if(mode==='pause'){ doPlay(); }
+}
+function doStop(click=true){
+  if(click){ sfxClick(); vibrate(12); }
+  if(mode==='rec'){ finishRec(); }
+  clearSeek(); stopFlutter(); hissStop();
+  audio.pause();
+  if(loaded) setMode('stop');
+}
+function doSeek(dir){
+  sfxClick(); vibrate(12);
+  if(!loaded) { say('no cassette inside'); return; }
+  if(loaded.chewed){ say('the tape is chewed — fix it with the pencil first'); return; }
+  if(batt<=0){ say('batteries are dead'); return; }
+  if((dir>0&&mode==='ff')||(dir<0&&mode==='rew')){ doStop(false); setMode('stop'); return; }
+  audio.pause(); hissStop(); stopFlutter(); clearSeek();
+  AC(); squealStart();
+  setMode(dir>0?'ff':'rew');
+  seekTimer=setInterval(()=>{
+    const dur=audio.duration;
+    if(!isFinite(dur)) return;
+    let t=audio.currentTime + dir*(dur/60 + 1.5);
+    if(t<=0){ audio.currentTime=0; doStop(false); setMode('stop'); sfxClunk(); return; }
+    if(t>=dur){ audio.currentTime=Math.max(0,dur-0.05); doStop(false); setMode('stop'); sfxClunk(); return; }
+    audio.currentTime=t;
+    if(squealNode) squealNode.f.frequency.value=2400+Math.random()*900;
+  },120);
+}
+audio.addEventListener('ended',()=>{ doStop(false); sfxClunk(); say('end of side A'); });
+audio.addEventListener('error',()=>{
+  if(loaded){ doStop(false); say('cannot play this file — try an MP3 or M4A'); }
+});
+
+/* ============ hold-a-reel to wind (finger) ============ */
+const deckWin=document.querySelector('.deck-window');
+let holdActive=false, prevHoldMode='stop';
+function holdStart(dir){
+  if(!loaded||animBusy||holdActive) return;
+  if(loaded.chewed||batt<=0) return;
+  holdActive=true;
+  prevHoldMode=(mode==='play')?'play':'stop';
+  audio.pause(); hissStop(); stopFlutter(); clearSeek();
+  AC(); squealStart();
+  setMode(dir>0?'ff':'rew');
+  seekTimer=setInterval(()=>{
+    const dur=audio.duration;
+    if(!isFinite(dur)) return;
+    let t=audio.currentTime + dir*Math.max(2, dur/45);
+    if(t<=0){ audio.currentTime=0; holdEnd(true); sfxClunk(); return; }
+    if(t>=dur){ audio.currentTime=Math.max(0,dur-0.05); holdEnd(true); sfxClunk(); return; }
+    audio.currentTime=t;
+    if(squealNode) squealNode.f.frequency.value=2400+Math.random()*900;
+  },100);
+}
+function holdEnd(hitEnd){
+  if(!holdActive) return;
+  holdActive=false; clearSeek();
+  if(prevHoldMode==='play' && !hitEnd) doPlay();
+  else { doStop(false); if(loaded) setMode('stop'); }
+}
+deckWin.addEventListener('pointerdown',e=>{
+  if(!loaded||animBusy) return;
+  e.preventDefault();
+  vibrate(10);
+  const r=deckWin.getBoundingClientRect();
+  const x=(e.clientX-r.left)/r.width;
+  holdStart(x>=0.5?1:-1);
+});
+['pointerup','pointercancel','pointerleave'].forEach(ev=>
+  deckWin.addEventListener(ev,()=>holdEnd(false)));
+
+/* ============ drag & drop for desk objects ============ */
+function dropTargetTape(x,y){
+  const el=document.elementFromPoint(x,y);
+  if(el && el.closest){
+    const mini=el.closest('.mini');
+    if(mini && mini.dataset.id){
+      const t=tapes.find(tt=>tt.id===mini.dataset.id);
+      if(t) return t;
+    }
+  }
+  const r=deckWin.getBoundingClientRect();
+  if(loaded && x>=r.left && x<=r.right && y>=r.top && y<=r.bottom) return loaded;
+  return null;
+}
+function hubAt(x,y){
+  if(!loaded) return null;
+  const r=deckWin.getBoundingClientRect();
+  const hubs=[
+    {x:r.left+r.width*0.365, y:r.top+r.height*0.40},
+    {x:r.left+r.width*0.645, y:r.top+r.height*0.40}
+  ];
+  if(loaded.chewed){
+    // chewed tape: the whole deck window is the repair zone — snap to nearest hub
+    if(x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom){
+      return Math.hypot(x-hubs[0].x,y-hubs[0].y)<=Math.hypot(x-hubs[1].x,y-hubs[1].y)?hubs[0]:hubs[1];
+    }
+    return null;
+  }
+  const rad=Math.max(34, r.width*0.13);
+  for(const h of hubs){ if(Math.hypot(x-h.x,y-h.y)<rad) return h; }
+  return null;
+}
+function overWalkman(x,y){
+  const r=document.querySelector('.walkman').getBoundingClientRect();
+  return x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom;
+}
+function makeDraggable(el, hooks){
+  el.addEventListener('pointerdown',e=>{
+    e.preventDefault();
+    const r=el.getBoundingClientRect();
+    const ox=e.clientX-r.left, oy=e.clientY-r.top;
+    el.style.width=r.width+'px';
+    el.classList.add('dragging');
+    el.style.position='fixed'; el.style.zIndex=100;
+    el.style.left=(e.clientX-ox)+'px'; el.style.top=(e.clientY-oy)+'px';
+    el.style.right='auto'; el.style.bottom='auto';
+    el.style.pointerEvents='none';
+    vibrate(8); sfxClick();
+    const mv=ev=>{
+      el.style.left=(ev.clientX-ox)+'px'; el.style.top=(ev.clientY-oy)+'px';
+      if(hooks.onMove) hooks.onMove(ev);
+    };
+    const up=ev=>{
+      document.removeEventListener('pointermove',mv);
+      document.removeEventListener('pointerup',up);
+      document.removeEventListener('pointercancel',up);
+      if(hooks.onDrop) hooks.onDrop(ev);
+      el.classList.remove('dragging');
+      el.style.position=''; el.style.left=''; el.style.top='';
+      el.style.right=''; el.style.bottom='';
+      el.style.width=''; el.style.zIndex=''; el.style.pointerEvents='';
+      sfxClick();
+    };
+    document.addEventListener('pointermove',mv);
+    document.addEventListener('pointerup',up);
+    document.addEventListener('pointercancel',up);
+  });
+}
+
+/* pencil winding / chew repair */
+let winding=false, windHub=null, windLastAng=0, windPrevMode='stop', windTick=0, chewHidden=0;
+function windStart(h,e){
+  winding=true; windHub=h; windTick=0;
+  windPrevMode=(mode==='play')?'play':'stop';
+  if(mode!=='stop'&&mode!=='pause') doStop(false); else audio.pause();
+  windLastAng=Math.atan2(e.clientY-h.y, e.clientX-h.x);
+  vibrate(8);
+  if(loaded && loaded.chewed) say('now TWIST in circles — wind the spaghetti back in!');
+}
+function windMove(e){
+  const a=Math.atan2(e.clientY-windHub.y, e.clientX-windHub.x);
+  let d=a-windLastAng;
+  while(d>Math.PI) d-=2*Math.PI;
+  while(d<-Math.PI) d+=2*Math.PI;
+  windLastAng=a;
+  angL+=d*180/Math.PI; angR+=d*180/Math.PI;
+  const rl=holder.querySelector('.reelL'), rr=holder.querySelector('.reelR');
+  if(rl) rl.style.transform=`rotate(${angL}deg)`;
+  if(rr) rr.style.transform=`rotate(${angR}deg)`;
+  windTick+=Math.abs(d);
+  if(windTick>0.45){ windTick=0; burst(1500,0.02,0.12); vibrate(4); }
+  if(loaded && loaded.chewed){
+    chewFixAcc+=Math.abs(d);
+    // each strand of spaghetti gets pulled back in as you twist
+    const strands=holder.querySelectorAll('.chewP');
+    const hide=Math.min(strands.length, Math.floor(chewFixAcc/3.2));
+    if(hide>chewHidden){
+      chewHidden=hide; sfxClick(); vibrate(12);
+      say(hide<strands.length ? 'keep twisting… '+(strands.length-hide)+' loop'+(strands.length-hide>1?'s':'')+' to go' : 'almost there…');
+    }
+    strands.forEach((p,i)=>{ if(i<hide) p.style.display='none'; });
+    if(chewFixAcc>13.5){ // ~2 full turns
+      chewFixAcc=0; chewHidden=0; loaded.chewed=false;
+      holder.innerHTML=cassetteSVG(loaded);
+      renderShelf(); sfxClunk();
+      say('tape rescued — good as new(ish) 🎉');
+    }
+    return; // repairing, not seeking
+  }
+  const dur=audio.duration;
+  if(!isFinite(dur)) return;
+  audio.currentTime=Math.max(0,Math.min(dur-0.05,(audio.currentTime||0)+d/(2*Math.PI)*8));
+}
+function windEnd(){
+  if(!winding) return;
+  winding=false;
+  if(windPrevMode==='play' && loaded && !loaded.chewed) doPlay();
+}
+
+makeDraggable($('pencilObj'),{
+  onMove(e){
+    const h=hubAt(e.clientX,e.clientY);
+    if(h){
+      if(!winding) windStart(h,e);
+      else if(windHub===h) windMove(e);
+      else { windEnd(); windStart(h,e); }
+    } else if(winding){ windEnd(); }
+  },
+  onDrop(e){
+    if(winding){ windEnd(); return; }
+    const t=dropTargetTape(e.clientX,e.clientY);
+    if(!t) return;
+    if(t.chewed){
+      say(loaded&&t.id===loaded.id
+        ? 'hold the pencil ON a reel and twist in circles to fix it'
+        : 'insert the chewed tape first, then fix it with the pencil');
+      return;
+    }
+    openLabelEditor(t);
+  }
+});
+makeDraggable($('tapeObj'),{
+  onDrop(e){
+    const t=dropTargetTape(e.clientX,e.clientY);
+    if(t) applyStickyTape(t);
+  }
+});
+
+/* label stickers */
+let stickerIdx=1;
+makeDraggable($('labelsObj'),{
+  onDrop(e){
+    const t=dropTargetTape(e.clientX,e.clientY);
+    if(!t) return;
+    t.color=LABEL_COLORS[stickerIdx++ % LABEL_COLORS.length];
+    t.name='________';
+    if(loaded && loaded.id===t.id) holder.innerHTML=cassetteSVG(t);
+    renderShelf(); vibrate(10);
+    say('fresh label stuck on — write on it!');
+    openLabelEditor(t);
+  }
+});
+
+/* envelope: share the mixtape */
+makeDraggable($('envObj'),{
+  onDrop: async e=>{
+    const t=dropTargetTape(e.clientX,e.clientY);
+    if(!t) return;
+    if(!t.url){ say('that tape is still empty — play or record on it first'); return; }
+    try{
+      const blob=await (await fetch(t.url)).blob();
+      const ext={'audio/wav':'wav','audio/x-wav':'wav','audio/mpeg':'mp3','audio/mp4':'m4a','audio/aac':'m4a','audio/ogg':'ogg','audio/webm':'webm','audio/flac':'flac'}[blob.type]||'wav';
+      const a=document.createElement('a');
+      a.href=t.url;
+      a.download=((t.name||'mixtape').replace(/[^\w\- ']+/g,'').trim()||'mixtape')+'.'+ext;
+      document.body.appendChild(a); a.click(); a.remove();
+      say('mixtape packed up and sent to your downloads 💌');
+    }catch(err){ say('could not export this tape'); }
+  }
+});
+
+/* fresh batteries */
+makeDraggable($('battObj'),{
+  onDrop(e){
+    if(!overWalkman(e.clientX,e.clientY)){ return; }
+    batt=1; updateBatt(); sfxClunk(); vibrate(20);
+    say('fresh AAs in — full power ⚡');
+  }
+});
+
+function applyStickyTape(t){
+  if(t.blank||t.taped){ say('this tape can already be recorded on'); sfxClick(); return; }
+  t.taped=true; sfxClick(); vibrate(10);
+  if(loaded && loaded.id===t.id) holder.innerHTML=cassetteSVG(t);
+  renderShelf();
+  say('notch covered — "'+t.name+'" is now recordable');
+}
+
+/* label editor */
+let editTape=null;
+function openLabelEditor(t){
+  editTape=t;
+  $('labelInput').value=t.name==='________'?'':t.name;
+  $('labelEditor').classList.add('show');
+  setTimeout(()=>$('labelInput').focus(),50);
+}
+$('labelCancel').addEventListener('click',()=>{ $('labelEditor').classList.remove('show'); });
+$('labelSave').addEventListener('click',()=>{
+  if(editTape){
+    editTape.name=($('labelInput').value.trim()||'untitled').slice(0,24);
+    if(loaded && loaded.id===editTape.id) holder.innerHTML=cassetteSVG(editTape);
+    renderShelf(); sfxClick(); say('label written ✏️');
+  }
+  $('labelEditor').classList.remove('show');
+});
+$('labelInput').addEventListener('keydown',e=>{ if(e.key==='Enter') $('labelSave').click(); });
+
+/* ============ tape chewing ============ */
+function startChew(){
+  if(!loaded||loaded.chewed) return;
+  loaded.chewed=true; chewGuard=0; chewFixAcc=0; chewHidden=0;
+  stopFlutter();
+  let n=0;
+  const warb=setInterval(()=>{
+    n++;
+    try{ audio.playbackRate=Math.max(0.3, 1-n*0.07+Math.random()*0.12); }catch(e){}
+  },80);
+  setTimeout(()=>{
+    clearInterval(warb);
+    doStop(false);
+    holder.innerHTML=cassetteSVG(loaded);
+    sfxClunk();
+    say('💀 the walkman ate the tape! put the pencil in a reel and twist to wind it back');
+  },1300);
+}
+
+/* ============ FM radio ============ */
+const radio={ on:false, freq:94.8, ready:false, loading:false, stations:[], staticG:null, dest:null };
+async function radioInit(){
+  if(radio.ready||radio.loading) return;
+  radio.loading=true;
+  say('warming up the radio tubes…');
+  try{
+    const c=AC();
+    const master=c.createGain(); master.gain.value=1;
+    radio.dest=c.createMediaStreamDestination();
+    master.connect(c.destination); master.connect(radio.dest);
+    // static
+    const st=c.createBufferSource(); st.buffer=getNoise(); st.loop=true;
+    const stF=c.createBiquadFilter(); stF.type='bandpass'; stF.frequency.value=1800; stF.Q.value=0.4;
+    const stG=c.createGain(); stG.gain.value=0;
+    st.connect(stF); stF.connect(stG); stG.connect(master); st.start();
+    radio.staticG=stG;
+    // stations
+    const b0=await renderStationBuffer(0);
+    const b1=await renderStationBuffer(1);
+    [[91.2,b0],[98.6,b1],[104.3,b0]].forEach(([f,buf])=>{
+      const src=c.createBufferSource(); src.buffer=buf; src.loop=true;
+      const lp=c.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=4200;
+      const g=c.createGain(); g.gain.value=0;
+      src.connect(lp); lp.connect(g); g.connect(master); src.start();
+      radio.stations.push({f,g});
+    });
+    radio.ready=true;
+  }catch(e){ say('radio is broken :('); }
+  radio.loading=false;
+}
+function radioTune(){
+  if(!radio.ready) return;
+  let maxP=0;
+  radio.stations.forEach(s=>{
+    const p=Math.max(0, 1-Math.abs(radio.freq-s.f)/0.35);
+    s.g.gain.value=radio.on ? p*0.5 : 0;
+    maxP=Math.max(maxP,p);
+  });
+  radio.staticG.gain.value=radio.on ? (0.10*(1-maxP)+0.015) : 0;
+}
+function radioUI(){
+  $('radioLed').setAttribute('fill', radio.on?'#39d353':'#4a2018');
+  const x=108 + (radio.freq-88)/(108-88)*84;
+  $('radioNeedle').setAttribute('x1',x); $('radioNeedle').setAttribute('x2',x);
+  $('radioFreqT').textContent=radio.freq.toFixed(1)+' FM';
+}
+$('radioPower').addEventListener('click', async ()=>{
+  sfxClick(); vibrate(10);
+  await radioInit();
+  if(!radio.ready) return;
+  radio.on=!radio.on;
+  radioTune(); radioUI();
+  say(radio.on?'📻 radio ON — tune the dial, stations at 91.2 / 98.6 / 104.3 · press REC to tape it':'radio off');
+});
+$('radioDial').addEventListener('input',e=>{
+  radio.freq=e.target.value/10;
+  radioTune(); radioUI();
+});
+
+/* ============ REC: mic or radio, records OVER the tape ============ */
+let recRec=null, recChunks=[];
+async function doRec(){
+  sfxClick(); vibrate(15);
+  if(mode==='rec'){ finishRec(); return; }
+  if(!loaded){ say('insert a tape first'); return; }
+  if(loaded.chewed){ say('the tape is chewed — fix it with the pencil first'); return; }
+  if(batt<=0){ say('batteries are dead — swap in the AAs from the desk'); return; }
+  if(!(loaded.blank||loaded.taped)){
+    say('record-protect notch is open! drag the sticky tape onto this cassette first');
+    return;
+  }
+  let stream, fromRadio=false;
+  if(radio.on && radio.dest){
+    stream=radio.dest.stream; fromRadio=true;
+  }else{
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+      say('microphone not available — or turn the radio ON to tape from it'); return;
+    }
+    try{ stream=await navigator.mediaDevices.getUserMedia({audio:true}); }
+    catch(err){ say('mic permission denied — or turn the radio ON to tape from it'); return; }
+  }
+  doStop(false);
+  recChunks=[]; recStartPos=audio.currentTime||0; recT0=performance.now();
+  try{ recRec=new MediaRecorder(stream); }
+  catch(err){ say('recording not supported here'); return; }
+  const stopTracks=!fromRadio;
+  recRec.ondataavailable=ev=>{ if(ev.data&&ev.data.size) recChunks.push(ev.data); };
+  recRec.onstop=async ()=>{
+    if(stopTracks) stream.getTracks().forEach(tr=>tr.stop());
+    const blob=new Blob(recChunks,{type:recRec.mimeType||'audio/webm'});
+    setMode('stop');
+    if(blob.size<200){ say('nothing recorded'); return; }
+    say('splicing the recording onto the tape…');
+    try{
+      await spliceOnto(loaded, recStartPos, blob);
+      sfxClunk();
+      say('recorded over the tape — rewind & PLAY to hear it');
+    }catch(err){ say('splice failed: '+((err&&err.message)||err)); }
+  };
+  recRec.start();
+  sfxClunk();
+  setMode('rec');
+  say(fromRadio
+    ? '● taping the RADIO onto "'+loaded.name+'" — STOP to finish'
+    : '● recording your MIC over "'+loaded.name+'" — STOP to finish');
+}
+function finishRec(){
+  if(recRec && recRec.state!=='inactive'){ try{ recRec.stop(); }catch(e){} }
+}
+$('btnRec').addEventListener('click',doRec);
+
+async function spliceOnto(tape, startSec, blob){
+  const c=AC();
+  const recBuf=await c.decodeAudioData(await blob.arrayBuffer());
+  let orig=null;
+  if(tape.url){
+    try{ orig=await c.decodeAudioData(await (await fetch(tape.url)).arrayBuffer()); }
+    catch(e){ orig=null; }
+  }
+  const rate=c.sampleRate;
+  const start=Math.floor(startSec*rate);
+  const recLen=recBuf.length;
+  const origLen=orig?orig.length:0;
+  const outLen=Math.max(origLen, start+recLen);
+  const nCh=orig?Math.min(2,orig.numberOfChannels):1;
+  const out=c.createBuffer(nCh, outLen, rate);
+  for(let ch=0; ch<nCh; ch++){
+    const o=out.getChannelData(ch);
+    if(orig) o.set(orig.getChannelData(Math.min(ch,orig.numberOfChannels-1)));
+    const rsrc=recBuf.getChannelData(Math.min(ch,recBuf.numberOfChannels-1));
+    const fade=Math.min(1000,Math.floor(recLen/4));
+    for(let i=0;i<recLen;i++){
+      let v=rsrc[i];
+      if(i<fade) v*=i/fade;
+      if(i>recLen-fade) v*=(recLen-i)/fade;
+      o[start+i]=v;
+    }
+  }
+  if(tape.url) URL.revokeObjectURL(tape.url);
+  tape.url=URL.createObjectURL(new Blob([wavBytes(out)],{type:'audio/wav'}));
+  if(loaded && loaded.id===tape.id){
+    audio.src=tape.url;
+    await new Promise(res=>{ audio.onloadedmetadata=res; setTimeout(res,2000); });
+    try{ audio.currentTime=Math.min((audio.duration||0), startSec+recBuf.duration); }catch(e){}
+  }
+}
+
+/* ============ reels + counter + battery drain (animation loop) ============ */
+let angL=0, angR=0, lastTs=null;
+function raf(ts){
+  if(lastTs===null) lastTs=ts;
+  const dt=Math.min(0.1,(ts-lastTs)/1000); lastTs=ts;
+  let speed=0;
+  if(mode==='play'||mode==='rec') speed=140;
+  else if(mode==='ff') speed=900;
+  else if(mode==='rew') speed=-900;
+  /* battery drain */
+  if(mode==='play') batt=Math.max(0,batt-dt/420);
+  else if(mode==='ff'||mode==='rew') batt=Math.max(0,batt-dt/150);
+  else if(mode==='rec') batt=Math.max(0,batt-dt/300);
+  updateBatt();
+  if(batt<=0 && (mode==='play'||mode==='ff'||mode==='rew')){
+    doStop(false); sfxClunk();
+    say('🔋 batteries died mid-song… drag the fresh AAs onto the walkman');
+  }
+  /* tape chew chance: after 90 s of playing, on average once per ~5 min */
+  if(mode==='play' && loaded && !loaded.chewed && !loaded.blank){
+    chewGuard+=dt;
+    if(chewGuard>90 && Math.random()<dt/300) startChew();
+  }
+  if(loaded){
+    const dur=isFinite(audio.duration)?audio.duration:0;
+    let t=audio.currentTime||0;
+    if(mode==='rec') t=recStartPos+(performance.now()-recT0)/1000;
+    const p=dur>0?Math.min(1,t/dur):0;
+    if(speed!==0){
+      angL+=speed*dt*(1+0.5*p)*battFactor();
+      angR+=speed*dt*(1.5-0.5*p)*battFactor();
+    }
+    const rl=holder.querySelector('.reelL'), rr=holder.querySelector('.reelR');
+    const sl=holder.querySelector('.spoolL'), sr2=holder.querySelector('.spoolR');
+    if(rl) rl.style.transform=`rotate(${angL}deg)`;
+    if(rr) rr.style.transform=`rotate(${angR}deg)`;
+    if(sl) sl.setAttribute('r',(40-20*p).toFixed(1));
+    if(sr2) sr2.setAttribute('r',(20+20*p).toFixed(1));
+    counter.textContent=String(Math.floor(t*2.4)%1000).padStart(3,'0');
+    timeLbl.textContent=fmt(t)+' / '+(dur>0?fmt(dur):'--:--');
+  }
+  requestAnimationFrame(raf);
+}
+const fmt=s=>{ s=Math.max(0,Math.floor(s)); return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); };
+requestAnimationFrame(raf);
+
+/* ============ uploads ============ */
+$('addBtn').addEventListener('click',()=>{ sfxClick(); $('filePick').click(); });
+$('filePick').addEventListener('change',e=>{
+  const files=[...e.target.files];
+  files.forEach((f,i)=>{
+    tapes.push({
+      id:'t'+Date.now()+'_'+i,
+      name:f.name.replace(/\.[^.]+$/,'').slice(0,24),
+      color:LABEL_COLORS[(tapes.length)%LABEL_COLORS.length],
+      url:URL.createObjectURL(f)
+    });
+  });
+  if(files.length) say(files.length+' tape'+(files.length>1?'s':'')+' added to the case');
+  renderShelf();
+  e.target.value='';
+});
+
+/* ============ buttons ============ */
+$('btnPlay').addEventListener('click',doPlay);
+$('btnPause').addEventListener('click',doPause);
+$('btnStop').addEventListener('click',()=>doStop(true));
+$('btnFF').addEventListener('click',()=>doSeek(1));
+$('btnRew').addEventListener('click',()=>doSeek(-1));
+$('btnEject').addEventListener('click',ejectTape);
+$('vol').addEventListener('input',e=>{ audio.volume=e.target.value/100; });
+audio.volume=0.8;
+
+/* DOLBY NR: ON = clean, OFF = hiss + wobble */
+$('sw1').addEventListener('click',e=>{
+  e.currentTarget.classList.toggle('on'); sfxClick(); vibrate(8);
+  const dolby=!tapeFxOn();
+  if(mode==='play'){ if(dolby) hissStop(); else hissStart(); }
+  say(dolby ? 'DOLBY NR ON — clean sound' : 'DOLBY NR OFF — tape hiss & wobble');
+});
+$('sw2').addEventListener('click',e=>{ e.currentTarget.classList.toggle('on'); sfxClick(); vibrate(8); });
+
+/* keyboard (desktop bonus) */
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT') return;
+  if(e.code==='Space'){ e.preventDefault(); mode==='play'?doPause():doPlay(); }
+  if(e.code==='ArrowRight') doSeek(1);
+  if(e.code==='ArrowLeft') doSeek(-1);
+  if(e.code==='KeyS') doStop(true);
+  if(e.code==='KeyE') ejectTape();
+  if(e.code==='KeyR') doRec();
+});
+
+/* ============ boot ============ */
+tapes.push({ id:'demo', name:"Mixtape '86 ♥", color:'#e8b64a', demo:true, url:null });
+tapes.push({ id:'blank', name:'blank — record me!', color:'#c9d6f0', blank:true, url:null });
+renderShelf();
+updateBatt();
+radioUI();
+
+/* PWA: only when served over http(s) — silently skipped when opened as a local file */
+if('serviceWorker' in navigator && /^https?:/.test(location.protocol)){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+</script>
+</body>
+</html>
