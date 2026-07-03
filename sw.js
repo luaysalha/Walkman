@@ -1,4 +1,4 @@
-const CACHE='walkman-v4';
+const CACHE='walkman-v6';
 self.addEventListener('install',e=>{
   e.waitUntil(caches.open(CACHE).then(c=>c.addAll(['./','./index.html','./manifest.json','./icon-192.png','./icon-512.png'])));
   self.skipWaiting();

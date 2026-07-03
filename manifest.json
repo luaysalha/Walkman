@@ -1,7 +1,7 @@
 {
-  "name": "SUPERSOUND WM-26 Cassette Walkman",
+  "name": "TAPEWAVE TW-26 Cassette Walkman",
   "short_name": "Walkman",
-  "description": "A nostalgic cassette walkman — insert tapes, record over them, fix chewed tape with a pencil.",
+  "description": "A nostalgic cassette walkman — insert tapes, record over them, build your tape rack.",
   "start_url": ".",
   "display": "standalone",
   "orientation": "any",

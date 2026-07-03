@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#0d0f12">
-<title>SUPERSOUND WM-26 · Cassette Walkman</title>
+<title>TAPEWAVE TW-26 · Cassette Walkman</title>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -239,6 +239,65 @@
     text-shadow:0 1px 1px rgba(0,0,0,.35);
   }
   #newTapeBtn:active{ transform:translateY(3px); box-shadow:0 0 0 #24405c; }
+  #rackBtn{
+    background:linear-gradient(180deg,#8a6a4a,#5a4630); color:#f2ead7; border:1px solid #4a3826; border-radius:8px;
+    font-size:11px; font-weight:800; letter-spacing:1px; padding:8px 12px; cursor:pointer; margin-right:8px;
+    box-shadow:0 3px 0 #33261a, 0 5px 10px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.25);
+  }
+  #rackBtn:active{ transform:translateY(3px); box-shadow:0 0 0 #33261a; }
+
+  /* ===== the tape rack (archive) ===== */
+  .rack-overlay{
+    position:fixed; inset:0; z-index:140; display:none; align-items:center; justify-content:center;
+    background:rgba(0,0,0,.6); padding:16px;
+  }
+  .rack-overlay.show{ display:flex; }
+  .rack-box{
+    width:min(560px,96vw); max-height:86vh; display:flex; flex-direction:column;
+    background:
+      repeating-linear-gradient(90deg, rgba(0,0,0,.07) 0 3px, transparent 3px 46px),
+      linear-gradient(180deg,#5a4630,#3b2c1d);
+    border:2px solid #6b5540; border-radius:16px;
+    box-shadow:0 30px 60px rgba(0,0,0,.7), inset 0 2px 0 rgba(255,255,255,.1);
+    padding:14px;
+  }
+  .rack-head{ display:flex; align-items:flex-start; justify-content:space-between; padding:0 4px 10px; }
+  .rack-head b{ font-size:11px; letter-spacing:3px; color:#e6d9b8; }
+  .rack-head small{ font-size:8px; letter-spacing:1px; color:rgba(255,255,255,.4); }
+  #rackClose{
+    background:transparent; border:1px solid #8a715c; color:#e6d9b8; border-radius:6px;
+    width:30px; height:30px; cursor:pointer; font-size:14px;
+  }
+  .rack{ overflow-y:auto; display:flex; flex-direction:column; gap:9px; padding:4px 2px 8px; }
+  .spine{
+    background:linear-gradient(180deg,#33363e,#1e2128);
+    border:1px solid #4a4f5a; border-radius:5px;
+    box-shadow:0 3px 5px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.12);
+    cursor:pointer; flex:0 0 auto;
+  }
+  .spine-top{ display:flex; align-items:center; gap:8px; padding:6px 10px; }
+  .spine-top i{ width:7px; height:7px; border-radius:50%; background:#0e1014; box-shadow:inset 0 0 0 2px #4a4f5a; flex:0 0 auto; }
+  .spine-label{
+    flex:1; background:#f2ead7; border-radius:3px; padding:3px 10px; min-width:0;
+    display:flex; align-items:center; gap:8px;
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,.2);
+  }
+  .spine-band{ width:14px; height:14px; border-radius:3px; flex:0 0 auto; box-shadow:inset 0 0 0 1px rgba(0,0,0,.2); }
+  .spine-name{
+    flex:1; font-family:"Bradley Hand","Segoe Script","Comic Sans MS",cursive;
+    font-size:13px; font-weight:bold; color:#2e2317; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .spine-sub{ font-size:7px; letter-spacing:1px; color:#8a715c; flex:0 0 auto; font-weight:800; }
+  .spine-actions{ display:none; gap:8px; padding:0 10px 9px; }
+  .spine.sel .spine-actions{ display:flex; }
+  .spine-actions button{
+    flex:1; border-radius:6px; padding:8px 4px; font-size:10px; font-weight:800; letter-spacing:1px; cursor:pointer;
+    border:1px solid #a34400; background:linear-gradient(180deg,#ff8c33,#d95a00); color:#fff;
+  }
+  .spine-actions button.binb{ background:linear-gradient(180deg,#8a4038,#5c241e); border-color:#4a1812; }
+  .spine.shake{ animation:shakeX .35s; }
+  @keyframes shakeX{ 25%{transform:translateX(-5px) rotate(-.6deg)} 75%{transform:translateX(5px) rotate(.6deg)} }
+  .rack-empty{ text-align:center; color:rgba(255,255,255,.4); font-size:11px; letter-spacing:1px; padding:26px 0; }
   .shelf{
     display:flex; gap:12px; overflow-x:auto; padding:12px 10px 14px; scrollbar-width:thin;
     background:
@@ -300,17 +359,42 @@
   }
   .drawer.open{ transform:translate(-50%,0); }
   .drawer-handle{
-    position:absolute; left:50%; bottom:-36px; transform:translateX(-50%);
+    position:absolute; left:50%; bottom:-42px; transform:translateX(-50%);
     background:linear-gradient(180deg,#54402c,#3b2c1d);
     border:1px solid #63503a; border-top:none;
     border-radius:0 0 12px 12px; cursor:pointer;
-    padding:8px 24px 10px; font-size:10px; letter-spacing:2px; font-weight:800;
+    padding:8px 26px 10px; font-size:10px; letter-spacing:2px; font-weight:800;
     color:#d9c9a6; white-space:nowrap;
     box-shadow:0 8px 16px rgba(0,0,0,.5);
   }
+  .drawer-handle::before{
+    content:""; display:block; width:52px; height:7px; margin:0 auto 6px;
+    border-radius:4px;
+    background:linear-gradient(180deg,#f2f4f8,#8a909c 70%,#6f7683);
+    border:1px solid #565c68;
+    box-shadow:0 2px 3px rgba(0,0,0,.6), inset 0 1px 0 #fff;
+  }
   .drawer-items{
-    display:flex; align-items:center; gap:18px;
-    overflow-x:auto; padding:8px 4px 6px;
+    display:flex; align-items:stretch; gap:10px;
+    overflow-x:auto; padding:10px 4px 8px;
+  }
+  /* felt-lined compartments, one per tool */
+  .slot{
+    flex:0 0 auto; display:flex; flex-direction:column; align-items:center;
+    justify-content:space-between; gap:7px;
+    padding:12px 12px 8px;
+    background:
+      repeating-linear-gradient(45deg, rgba(0,0,0,.18) 0 2px, transparent 2px 4px),
+      linear-gradient(180deg,#221812,#31241a);
+    border-radius:10px;
+    box-shadow:
+      inset 0 4px 9px rgba(0,0,0,.8),
+      inset 0 -1px 0 rgba(255,255,255,.06),
+      0 1px 0 rgba(255,255,255,.09);
+  }
+  .slot-name{
+    font-size:7px; letter-spacing:2px; color:rgba(230,217,184,.55); font-weight:800;
+    white-space:nowrap;
   }
   .obj{ flex:0 0 auto; cursor:grab; touch-action:none; position:relative; }
   .obj svg{ width:100%; height:auto; display:block; filter:drop-shadow(0 6px 6px rgba(0,0,0,.5)); transition:filter .15s, transform .15s; }
@@ -320,7 +404,7 @@
   #labelsObj{ width:76px; }
   #tapeObj{ width:58px; }
   #envObj{ width:90px; }
-  #battObj{ width:92px; }
+  #battObj{ width:82px; }
   .appliance{ flex:0 0 auto; position:relative; width:168px; }
   .appliance svg{ width:100%; height:auto; display:block; filter:drop-shadow(0 6px 6px rgba(0,0,0,.5)); }
   .r-power{ position:absolute; right:5%; top:6%; width:18%; height:24%; cursor:pointer; }
@@ -414,8 +498,8 @@
 <div class="scene">
 <div class="walkman">
   <div class="topbar">
-    <span class="brand">SUPERSOUND <em>stereo</em></span>
-    <span class="model">WM-26 · AUTO REVERSE</span>
+    <span class="brand">TAPEWAVE <em>stereo</em></span>
+    <span class="model">TW-26 · AUTO REVERSE</span>
     <div class="batt"><i id="battFill"></i></div>
     <span class="led" id="led"></span>
   </div>
@@ -465,7 +549,7 @@
   <div class="shelf-area">
     <div class="shelf-head">
       <span>TAPE CASE</span>
-      <div><button id="helpBtn" title="take the tour">?</button><button id="newTapeBtn">📼 NEW TAPE</button><button id="addBtn">＋ ADD MUSIC</button></div>
+      <div><button id="helpBtn" title="take the tour">?</button><button id="rackBtn">🗄 RACK</button><button id="newTapeBtn">📼 NEW TAPE</button><button id="addBtn">＋ ADD MUSIC</button></div>
     </div>
     <div class="shelf" id="shelf"></div>
   </div>
@@ -489,6 +573,7 @@
   <div class="drawer-items">
 
   <!-- FM radio (appliance) -->
+  <div class="slot">
   <div class="appliance" id="radioObj" title="FM radio — power on, tune the dial, press REC to tape from it">
     <svg viewBox="0 0 210 122" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -522,13 +607,16 @@
       <text x="186" y="49" font-size="6" fill="rgba(255,220,150,.5)" font-family="Arial">108</text>
       <line id="radioNeedle" x1="134" y1="48" x2="134" y2="74" stroke="#ff5a3c" stroke-width="2"/>
       <text id="radioFreqT" x="149" y="88" text-anchor="middle" font-family="Courier New, monospace" font-size="10" font-weight="bold" fill="#ffdca8">94.8 FM</text>
-      <text x="149" y="110" text-anchor="middle" font-family="Arial" font-size="8" letter-spacing="2" fill="#6a5638" font-weight="bold">SUPERSOUND FM-2</text>
+      <text x="149" y="110" text-anchor="middle" font-family="Arial" font-size="8" letter-spacing="2" fill="#6a5638" font-weight="bold">TAPEWAVE FM-2</text>
     </svg>
     <div class="r-power" id="radioPower"></div>
     <input type="range" id="radioDial" min="880" max="1080" value="948">
   </div>
+  <span class="slot-name">FM RADIO · REC SOURCE</span>
+  </div>
 
   <!-- sheet of blank label stickers -->
+  <div class="slot">
   <div class="obj" id="labelsObj" title="label stickers — drop one on a cassette, then write with the pencil">
     <svg viewBox="0 0 110 92" xmlns="http://www.w3.org/2000/svg">
       <rect x="8" y="14" width="92" height="34" rx="3" fill="#e6dcc4" transform="rotate(-4 54 31)"/>
@@ -541,8 +629,11 @@
       <text x="53" y="74" text-anchor="middle" font-family="Arial" font-size="7" fill="rgba(255,255,255,.3)">peel &amp; stick</text>
     </svg>
   </div>
+  <span class="slot-name">LABEL STICKERS</span>
+  </div>
 
   <!-- scotch tape -->
+  <div class="slot">
   <div class="obj" id="tapeObj" title="sticky tape — drop on a cassette to cover the record-protect notch">
     <svg viewBox="0 0 110 132" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -562,9 +653,12 @@
       <line x1="88" y1="86" x2="96" y2="116" stroke="rgba(255,255,255,.5)" stroke-width="2"/>
     </svg>
   </div>
+  <span class="slot-name">STICKY TAPE</span>
+  </div>
 
   <!-- envelope: share the mixtape -->
-  <div class="obj" id="envObj" title="envelope — drop on a cassette to send the mixtape (downloads the audio)">
+  <div class="slot">
+  <div class="obj" id="envObj" title="envelope — drop on a cassette to send the mixtape">
     <svg viewBox="0 0 130 92" xmlns="http://www.w3.org/2000/svg">
       <rect x="4" y="10" width="122" height="76" rx="5" fill="#d9b98a" stroke="#a88350"/>
       <path d="M4 14 L65 52 L126 14" fill="none" stroke="#a88350" stroke-width="2"/>
@@ -573,8 +667,11 @@
       <text x="20" y="70" font-family="'Bradley Hand','Segoe Script',cursive" font-size="12" fill="#5a3c1e">for you ♡</text>
     </svg>
   </div>
+  <span class="slot-name">ENVELOPE · SHARE</span>
+  </div>
 
   <!-- pencil -->
+  <div class="slot">
   <div class="obj" id="pencilObj" title="pencil — write on labels, twist in a reel to wind or fix chewed tape">
     <svg viewBox="0 0 320 44" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -592,7 +689,7 @@
       <rect x="44" y="11" width="212" height="22" rx="2" fill="url(#pbody)"/>
       <line x1="44" y1="18" x2="256" y2="18" stroke="rgba(0,0,0,.16)"/>
       <line x1="44" y1="26" x2="256" y2="26" stroke="rgba(255,255,255,.28)"/>
-      <text x="150" y="25" text-anchor="middle" font-family="Arial" font-size="8" letter-spacing="2" fill="rgba(90,60,0,.75)" font-weight="bold">SUPERSOUND · HB 2</text>
+      <text x="150" y="25" text-anchor="middle" font-family="Arial" font-size="8" letter-spacing="2" fill="rgba(90,60,0,.75)" font-weight="bold">TAPEWAVE · HB 2</text>
       <path d="M44 11 L14 19 L14 25 L44 33 Z" fill="url(#pwood)"/>
       <path d="M44 11 L14 19 M14 25 L44 33" stroke="rgba(0,0,0,.14)" fill="none"/>
       <path d="M14 19 L2 22 L14 25 Z" fill="#3a3f47"/>
@@ -603,28 +700,38 @@
       <rect x="274" y="12" width="26" height="8" rx="4" fill="rgba(255,255,255,.28)"/>
     </svg>
   </div>
+  <span class="slot-name">PENCIL · HB 2</span>
+  </div>
 
-  <!-- spare AA batteries -->
-  <div class="obj" id="battObj" title="fresh AA batteries — drag onto the walkman when it runs low">
-    <svg viewBox="0 0 130 64" xmlns="http://www.w3.org/2000/svg">
+  <!-- spare round lithium cell -->
+  <div class="slot">
+  <div class="obj" id="battObj" title="fresh battery — drag onto the walkman when it runs low">
+    <svg viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <linearGradient id="cell" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#f2f4f8"/><stop offset=".45" stop-color="#aab1bd"/><stop offset="1" stop-color="#6f7683"/>
-        </linearGradient>
+        <radialGradient id="coin" cx=".38" cy=".3" r=".9">
+          <stop offset="0" stop-color="#fbfcfe"/><stop offset=".4" stop-color="#ccd2db"/>
+          <stop offset=".78" stop-color="#8f96a3"/><stop offset="1" stop-color="#6f7683"/>
+        </radialGradient>
       </defs>
-      <g transform="rotate(-2 60 18)">
-        <rect x="8" y="6" width="100" height="21" rx="10" fill="url(#cell)" stroke="#5c6370"/>
-        <rect x="8" y="6" width="26" height="21" rx="10" fill="#c78a3c"/>
-        <rect x="108" y="12" width="5" height="9" rx="2" fill="#c6ccd6" stroke="#767d8a"/>
-        <text x="66" y="20" text-anchor="middle" font-family="Arial" font-size="8" font-weight="bold" fill="#33383f" letter-spacing="1">AA SUPERCELL</text>
-      </g>
-      <g transform="rotate(2 66 46)">
-        <rect x="16" y="34" width="100" height="21" rx="10" fill="url(#cell)" stroke="#5c6370"/>
-        <rect x="16" y="34" width="26" height="21" rx="10" fill="#c78a3c"/>
-        <rect x="116" y="40" width="5" height="9" rx="2" fill="#c6ccd6" stroke="#767d8a"/>
-        <text x="74" y="48" text-anchor="middle" font-family="Arial" font-size="8" font-weight="bold" fill="#33383f" letter-spacing="1">AA SUPERCELL</text>
-      </g>
+      <!-- back cell, peeking out -->
+      <ellipse cx="78" cy="58" rx="33" ry="31" fill="#4c525e"/>
+      <ellipse cx="78" cy="54" rx="33" ry="31" fill="url(#coin)" stroke="#565c68"/>
+      <ellipse cx="78" cy="54" rx="25" ry="23" fill="none" stroke="rgba(0,0,0,.22)"/>
+      <!-- front cell -->
+      <circle cx="44" cy="54" r="37" fill="#41464f"/>
+      <circle cx="44" cy="50" r="37" fill="url(#coin)" stroke="#565c68" stroke-width="1.4"/>
+      <!-- knurled edge -->
+      <circle cx="44" cy="50" r="37" fill="none" stroke="rgba(0,0,0,.35)" stroke-width="2" stroke-dasharray="2 3"/>
+      <circle cx="44" cy="50" r="29" fill="none" stroke="rgba(0,0,0,.25)" stroke-width="1.2"/>
+      <!-- glossy highlight -->
+      <path d="M18 34 A32 32 0 0 1 48 15" stroke="rgba(255,255,255,.8)" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <!-- engraving -->
+      <text x="44" y="42" text-anchor="middle" font-family="Arial" font-size="15" font-weight="bold" fill="#6f7683">＋</text>
+      <text x="44" y="57" text-anchor="middle" font-family="Arial" font-size="9" font-weight="bold" fill="#606773" letter-spacing="1">TW-2032</text>
+      <text x="44" y="68" text-anchor="middle" font-family="Arial" font-size="7" fill="#7d8494" letter-spacing="1">3V LITHIUM</text>
     </svg>
+  </div>
+  <span class="slot-name">SPARE BATTERY</span>
   </div>
   </div><!--/drawer-items-->
 </div><!--/drawer-->
@@ -651,6 +758,16 @@
       <button class="ghost" id="labelCancel">CANCEL</button>
       <button id="labelSave">WRITE</button>
     </div>
+  </div>
+</div>
+
+<div class="rack-overlay" id="rackOverlay">
+  <div class="rack-box">
+    <div class="rack-head">
+      <div><b>THE TAPE RACK</b><br><small>your whole collection — tap a spine to pick it up</small></div>
+      <button id="rackClose">✕</button>
+    </div>
+    <div class="rack" id="rackList"></div>
   </div>
 </div>
 
@@ -1047,7 +1164,7 @@ async function doPlay(){
   sfxClick(); vibrate(12);
   if(!loaded){ say('no cassette — insert a tape first'); return; }
   if(loaded.chewed){ say('the tape is chewed — wind it back in with the pencil'); return; }
-  if(batt<=0){ say('batteries are dead — drag the fresh AAs from the desk onto the walkman'); return; }
+  if(batt<=0){ say('battery is dead — drag the spare cell from the tool drawer onto the walkman'); return; }
   clearSeek();
   if(mode==='play') return;
   try{ await AC().resume(); }catch(e){}
@@ -1422,7 +1539,7 @@ async function makeStoryPNG(t){
   x.fillText(t.name, W/2, H/2+400);
   x.fillStyle='rgba(255,255,255,.5)';
   x.font='38px Courier New, monospace';
-  x.fillText('made on my '+(ownerName||'SUPERSOUND')+' walkman', W/2, H-170);
+  x.fillText('made on my '+(ownerName||'TAPEWAVE')+' walkman', W/2, H-170);
   return await new Promise(res=>cv.toBlob(res,'image/png'));
 }
 
@@ -1443,7 +1560,7 @@ document.querySelectorAll('.swatch').forEach(s=>s.addEventListener('click',()=>{
 }));
 function setOwnerName(n){
   ownerName=(n||'').toUpperCase().slice(0,14);
-  brandEl.innerHTML=esc(ownerName||'SUPERSOUND')+' <em>stereo</em>';
+  brandEl.innerHTML=esc(ownerName||'TAPEWAVE')+' <em>stereo</em>';
   try{ localStorage.setItem('wm-name',ownerName); }catch(e){}
 }
 let editingName=false;
@@ -1461,7 +1578,7 @@ makeDraggable($('battObj'),{
   onDrop(e){
     if(!overWalkman(e.clientX,e.clientY)){ return; }
     batt=1; updateBatt(); sfxClunk(); vibrate(20);
-    say('fresh AAs in — full power ⚡');
+    say('fresh cell clicked in — full power ⚡');
   }
 });
 
@@ -1584,7 +1701,7 @@ async function doRec(){
   if(mode==='rec'){ finishRec(); return; }
   if(!loaded){ say('insert a tape first'); return; }
   if(loaded.chewed){ say('the tape is chewed — fix it with the pencil first'); return; }
-  if(batt<=0){ say('batteries are dead — swap in the AAs from the desk'); return; }
+  if(batt<=0){ say('battery is dead — swap in the spare cell from the drawer'); return; }
   if(!(loaded.blank||loaded.taped)){
     say('record-protect notch is open! drag the sticky tape onto this cassette first');
     return;
@@ -1683,7 +1800,7 @@ function raf(ts){
   updateBatt();
   if(batt<=0 && (mode==='play'||mode==='ff'||mode==='rew')){
     doStop(false); sfxClunk();
-    say('🔋 batteries died mid-song… drag the fresh AAs onto the walkman');
+    say('🔋 battery died mid-song… grab the spare cell from the drawer');
   }
   /* tape chew chance: after 90 s of playing, on average once per ~5 min */
   if(mode==='play' && loaded && !loaded.chewed && !loaded.blank){
@@ -1750,6 +1867,72 @@ async function loadTapes(){
   });
   if(all.length) say(all.length+' tape'+(all.length>1?'s':'')+' back from your archive 📼');
 }
+
+function deleteTapeDB(id){
+  idb().then(db=>db.transaction('tapes','readwrite').objectStore('tapes').delete(id)).catch(()=>{});
+}
+
+/* ============ the tape rack ============ */
+function renderRack(){
+  const list=$('rackList'); list.innerHTML='';
+  if(!tapes.length){
+    list.innerHTML='<div class="rack-empty">the rack is empty — press 📼 NEW TAPE and start recording</div>';
+    return;
+  }
+  tapes.forEach(t=>{
+    const inDeck=loaded && loaded.id===t.id;
+    const el=document.createElement('div'); el.className='spine';
+    const sub=inDeck?'IN THE DECK':(t.demo?'DEMO':(t.chewed?'CHEWED!':(t.blank?'BLANK':'SIDE '+(t.side||'A'))));
+    el.innerHTML=`<div class="spine-top"><i></i>
+        <div class="spine-label">
+          <span class="spine-band" style="background:${t.color}"></span>
+          <span class="spine-name">${esc(t.name)}</span>
+          <span class="spine-sub">${sub}</span>
+        </div><i></i></div>
+      <div class="spine-actions">
+        <button class="ins">▶ INSERT</button>
+        <button class="snd">💌 SEND</button>
+        <button class="binb">🗑 BIN IT</button>
+      </div>`;
+    el.querySelector('.spine-top').addEventListener('click',()=>{
+      sfxClick();
+      document.querySelectorAll('.spine.sel').forEach(s=>{ if(s!==el) s.classList.remove('sel'); });
+      el.classList.toggle('sel');
+    });
+    el.querySelector('.ins').addEventListener('click',ev=>{
+      ev.stopPropagation();
+      $('rackOverlay').classList.remove('show');
+      insertTape(t);
+    });
+    el.querySelector('.snd').addEventListener('click',ev=>{
+      ev.stopPropagation();
+      if(!t.url){ say('that tape is still empty'); return; }
+      $('rackOverlay').classList.remove('show');
+      openShare(t);
+    });
+    el.querySelector('.binb').addEventListener('click',ev=>{
+      ev.stopPropagation();
+      if(inDeck){ say('it\'s in the deck — EJECT first'); return; }
+      if(!el.dataset.armed){
+        el.dataset.armed='1';
+        el.classList.add('shake'); setTimeout(()=>el.classList.remove('shake'),400);
+        ev.target.textContent='SURE? TAP AGAIN';
+        sfxClick();
+        return;
+      }
+      tapes=tapes.filter(x=>x.id!==t.id);
+      if(t.url){ try{ URL.revokeObjectURL(t.url); }catch(e){} }
+      deleteTapeDB(t.id);
+      sfxClunk(); vibrate(15);
+      say('"'+t.name+'" went to the big shoebox in the sky 🗑');
+      renderRack(); renderShelf();
+    });
+    list.appendChild(el);
+  });
+}
+$('rackBtn').addEventListener('click',()=>{ sfxClunk(); vibrate(8); renderRack(); $('rackOverlay').classList.add('show'); });
+$('rackClose').addEventListener('click',()=>{ sfxClick(); $('rackOverlay').classList.remove('show'); });
+$('rackOverlay').addEventListener('click',e=>{ if(e.target===$('rackOverlay')) $('rackOverlay').classList.remove('show'); });
 
 /* ============ new blank tapes ============ */
 let blankCount=1;
@@ -1847,7 +2030,7 @@ const TOUR=[
   ['#drawerHandle','The tool drawer lives up here: pencil, label stickers, scotch tape, spare batteries, FM radio and the envelope. Drag things out of it onto cassettes.'],
   ['.palette','Paint your walkman a colour — and tap its NAME up top to engrave yours. It stays yours on this device.'],
   ['#btnRec','REC records your mic — or the FM radio if it\'s on — OVER the tape, from wherever it\'s wound. Cover the notch with sticky tape first!'],
-  ['.batt','Batteries drain for real: the music goes slow and warbly. Fresh AAs are in the drawer. Enjoy 1986 🎶'],
+  ['.batt','The battery drains for real: the music goes slow and warbly. A spare lithium cell lives in the drawer. Enjoy 1986 🎶'],
 ];
 let tutI=-1, tutEl=null;
 function tutShow(i){
