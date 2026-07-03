@@ -18,7 +18,7 @@
     font-family:"Helvetica Neue", Arial, sans-serif;
     display:flex; justify-content:center;
     background: radial-gradient(1200px 600px at 50% -10%, #23272f 0%, #0d0f12 60%);
-    padding:14px 10px 30px;
+    padding:48px 10px 30px;
   }
   .scene{ width:100%; max-width:900px; }
 
@@ -277,47 +277,71 @@
 
   .hint{ text-align:center; font-size:10px; color:#78808e; letter-spacing:1px; margin-top:14px; text-shadow:0 1px 0 rgba(255,255,255,.5); }
 
-  /* ================= wooden desk ================= */
-  .desk{
-    position:relative; height:262px; margin-top:16px;
+  /* ================= pull-down tool drawer ================= */
+  .drawer{
+    position:fixed; top:0; left:50%; z-index:120;
+    width:min(760px,97vw);
+    transform:translate(-50%,-100%);
+    transition:transform .32s cubic-bezier(.3,.8,.3,1);
     background:
       repeating-linear-gradient(90deg, rgba(0,0,0,.07) 0 3px, transparent 3px 46px),
-      repeating-linear-gradient(0deg, rgba(255,255,255,.02) 0 2px, transparent 2px 6px),
       linear-gradient(180deg,#54402c,#3b2c1d);
-    border-radius:14px; border:1px solid #63503a;
-    box-shadow:inset 0 5px 14px rgba(0,0,0,.55), 0 10px 24px rgba(0,0,0,.4);
+    border:1px solid #63503a; border-top:none;
+    border-radius:0 0 18px 18px;
+    box-shadow:0 18px 40px rgba(0,0,0,.6), inset 0 -4px 10px rgba(0,0,0,.4);
+    padding:10px 12px 14px;
   }
-  .desk-label{
-    position:absolute; left:14px; top:9px; font-size:8px; letter-spacing:3px;
-    color:rgba(255,255,255,.32); font-weight:800;
+  .drawer.open{ transform:translate(-50%,0); }
+  .drawer-handle{
+    position:absolute; left:50%; bottom:-36px; transform:translateX(-50%);
+    background:linear-gradient(180deg,#54402c,#3b2c1d);
+    border:1px solid #63503a; border-top:none;
+    border-radius:0 0 12px 12px; cursor:pointer;
+    padding:8px 24px 10px; font-size:10px; letter-spacing:2px; font-weight:800;
+    color:#d9c9a6; white-space:nowrap;
+    box-shadow:0 8px 16px rgba(0,0,0,.5);
   }
-  .obj{ position:absolute; cursor:grab; touch-action:none; }
-  .obj svg{ width:100%; height:auto; display:block; filter:drop-shadow(0 7px 7px rgba(0,0,0,.5)); transition:filter .15s, transform .15s; }
+  .drawer-items{
+    display:flex; align-items:center; gap:18px;
+    overflow-x:auto; padding:8px 4px 6px;
+  }
+  .obj{ flex:0 0 auto; cursor:grab; touch-action:none; position:relative; }
+  .obj svg{ width:100%; height:auto; display:block; filter:drop-shadow(0 6px 6px rgba(0,0,0,.5)); transition:filter .15s, transform .15s; }
   .obj.dragging{ cursor:grabbing; }
   .obj.dragging svg{ filter:drop-shadow(0 18px 16px rgba(0,0,0,.55)); transform:scale(1.07); }
-  #pencilObj{ left:26%; bottom:16px; width:min(290px,46%); transform:rotate(-3deg); }
-  #labelsObj{ left:42%; top:22px; width:104px; transform:rotate(-3deg); }
-  #tapeObj{ right:24%; top:24px; width:76px; transform:rotate(9deg); }
-  #battObj{ right:4%; bottom:18px; width:118px; transform:rotate(-7deg); }
-  #envObj{ right:3%; top:16px; width:126px; transform:rotate(4deg); }
-
-  /* radio: an appliance, not draggable */
-  .appliance{ position:absolute; left:3%; top:22px; width:210px; }
-  .appliance svg{ width:100%; height:auto; display:block; filter:drop-shadow(0 8px 8px rgba(0,0,0,.5)); }
+  #pencilObj{ width:180px; }
+  #labelsObj{ width:76px; }
+  #tapeObj{ width:58px; }
+  #envObj{ width:90px; }
+  #battObj{ width:92px; }
+  .appliance{ flex:0 0 auto; position:relative; width:168px; }
+  .appliance svg{ width:100%; height:auto; display:block; filter:drop-shadow(0 6px 6px rgba(0,0,0,.5)); }
   .r-power{ position:absolute; right:5%; top:6%; width:18%; height:24%; cursor:pointer; }
   #radioDial{
     position:absolute; left:47%; top:26%; width:47%; height:26%;
     -webkit-appearance:none; appearance:none; opacity:0; cursor:ew-resize; margin:0;
   }
-  @media (max-width:640px){
-    .desk{ height:420px; }
-    .appliance{ width:170px; }
-    #envObj{ width:104px; }
-    #labelsObj{ left:auto; right:8%; top:118px; }
-    #tapeObj{ right:44%; top:132px; }
-    #pencilObj{ left:5%; bottom:78px; width:88%; }
-    #battObj{ bottom:12px; right:6%; }
+
+  /* paint palette */
+  .palette{ display:flex; gap:9px; align-items:center; padding:2px 4px 6px; flex-wrap:wrap; }
+  .palette b{ font-size:7px; letter-spacing:2px; color:rgba(255,255,255,.42); }
+  .palette small{ font-size:7px; letter-spacing:1px; color:rgba(255,255,255,.32); margin-left:auto; }
+  .swatch{
+    width:22px; height:22px; border-radius:50%; cursor:pointer;
+    border:2px solid rgba(255,255,255,.5); box-shadow:0 2px 4px rgba(0,0,0,.5);
   }
+  .swatch.sel{ outline:2px solid #ffdca8; outline-offset:2px; }
+
+  /* ===== walkman colour themes ===== */
+  .walkman.th-blue{ background:repeating-linear-gradient(90deg, rgba(255,255,255,.07) 0 1px, rgba(0,0,0,.035) 1px 3px), linear-gradient(180deg,#a8c9e8 0%,#6b93c0 45%,#4a76a6 100%); border-color:#3c6090; }
+  .walkman.th-red{ background:repeating-linear-gradient(90deg, rgba(255,255,255,.07) 0 1px, rgba(0,0,0,.035) 1px 3px), linear-gradient(180deg,#e8a8a8 0%,#c06b6b 45%,#a64a4a 100%); border-color:#8a3c3c; }
+  .walkman.th-black{ background:repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 1px, rgba(0,0,0,.05) 1px 3px), linear-gradient(180deg,#4a4f58 0%,#2a2e36 45%,#191c22 100%); border-color:#3c414b; }
+  .walkman.th-pink{ background:repeating-linear-gradient(90deg, rgba(255,255,255,.07) 0 1px, rgba(0,0,0,.035) 1px 3px), linear-gradient(180deg,#f0c3d8 0%,#d890b4 45%,#c06898 100%); border-color:#a05480; }
+  .walkman.th-yellow{ background:repeating-linear-gradient(90deg, rgba(255,255,255,.07) 0 1px, rgba(0,0,0,.035) 1px 3px), linear-gradient(180deg,#f0d998 0%,#d9b855 45%,#bd9a35 100%); border-color:#9a7c28; }
+  .walkman.th-black .brand{ color:#e8ebf2; text-shadow:none; }
+  .walkman.th-black .model,.walkman.th-black .time,.walkman.th-black .vlbl,
+  .walkman.th-black .switches span,.walkman.th-black .hint,.walkman.th-black .shelf-head span{ color:#9aa1b0; text-shadow:none; }
+  .brand{ cursor:pointer; }
 
   .toast{
     position:fixed; left:50%; bottom:24px; transform:translateX(-50%) translateY(80px);
@@ -410,12 +434,23 @@
     <div class="shelf" id="shelf"></div>
   </div>
 
-  <div class="hint">pencil: write on labels &amp; twist in a reel to wind · stickers: fresh label · scotch tape: unlock REC · envelope: send a mixtape</div>
+  <div class="hint">🧰 open the TOOL DRAWER up top — pencil writes &amp; winds, stickers = fresh label, scotch tape unlocks REC, envelope shares the mixtape</div>
 </div>
 
-<!-- ============ the desk ============ -->
-<div class="desk">
-  <span class="desk-label">DESK · DRAG THE OBJECTS</span>
+<!-- ============ pull-down tool drawer ============ -->
+<div class="drawer" id="drawer">
+  <div class="drawer-handle" id="drawerHandle">🧰 TOOL DRAWER</div>
+  <div class="palette">
+    <b>PAINT:</b>
+    <div class="swatch sel" data-th="" style="background:linear-gradient(180deg,#e8ebf0,#a8afbb)"></div>
+    <div class="swatch" data-th="th-blue" style="background:linear-gradient(180deg,#a8c9e8,#4a76a6)"></div>
+    <div class="swatch" data-th="th-red" style="background:linear-gradient(180deg,#e8a8a8,#a64a4a)"></div>
+    <div class="swatch" data-th="th-black" style="background:linear-gradient(180deg,#4a4f58,#191c22)"></div>
+    <div class="swatch" data-th="th-pink" style="background:linear-gradient(180deg,#f0c3d8,#c06898)"></div>
+    <div class="swatch" data-th="th-yellow" style="background:linear-gradient(180deg,#f0d998,#bd9a35)"></div>
+    <small>tap the NAME on the walkman to engrave yours</small>
+  </div>
+  <div class="drawer-items">
 
   <!-- FM radio (appliance) -->
   <div class="appliance" id="radioObj" title="FM radio — power on, tune the dial, press REC to tape from it">
@@ -555,12 +590,26 @@
       </g>
     </svg>
   </div>
-</div>
+  </div><!--/drawer-items-->
+</div><!--/drawer-->
 </div><!--/scene-->
+
+<div class="label-editor" id="shareSheet">
+  <div class="label-card">
+    <h4>SEND THE MIXTAPE 💌</h4>
+    <div id="shareTitle" style="font-family:'Bradley Hand','Segoe Script','Comic Sans MS',cursive; font-size:19px; color:#2e2317; margin-bottom:4px;"></div>
+    <div class="lc-actions" style="justify-content:flex-start; flex-wrap:wrap;">
+      <button id="shareAudio">SHARE AUDIO 💬</button>
+      <button id="shareStory">STORY CARD 📸</button>
+      <button id="shareDl" class="ghost">DOWNLOAD</button>
+      <button id="shareCancel" class="ghost">CLOSE</button>
+    </div>
+  </div>
+</div>
 
 <div class="label-editor" id="labelEditor">
   <div class="label-card">
-    <h4>WRITE ON THE LABEL ✏️</h4>
+    <h4 id="labelHead">WRITE ON THE LABEL ✏️</h4>
     <input id="labelInput" maxlength="24" placeholder="tape title…">
     <div class="lc-actions">
       <button class="ghost" id="labelCancel">CANCEL</button>
@@ -1070,9 +1119,13 @@ function makeDraggable(el, hooks){
     e.preventDefault();
     const r=el.getBoundingClientRect();
     const ox=e.clientX-r.left, oy=e.clientY-r.top;
+    // escape the transformed drawer so position:fixed works, and slide it shut
+    const parent=el.parentNode, next=el.nextSibling;
+    document.body.appendChild(el);
+    closeDrawer();
     el.style.width=r.width+'px';
     el.classList.add('dragging');
-    el.style.position='fixed'; el.style.zIndex=100;
+    el.style.position='fixed'; el.style.zIndex=300;
     el.style.left=(e.clientX-ox)+'px'; el.style.top=(e.clientY-oy)+'px';
     el.style.right='auto'; el.style.bottom='auto';
     el.style.pointerEvents='none';
@@ -1090,6 +1143,7 @@ function makeDraggable(el, hooks){
       el.style.position=''; el.style.left=''; el.style.top='';
       el.style.right=''; el.style.bottom='';
       el.style.width=''; el.style.zIndex=''; el.style.pointerEvents='';
+      parent.insertBefore(el,next); // back into the drawer
       sfxClick();
     };
     document.addEventListener('pointermove',mv);
@@ -1097,6 +1151,13 @@ function makeDraggable(el, hooks){
     document.addEventListener('pointercancel',up);
   });
 }
+
+/* drawer open/close */
+const drawerEl=$('drawer');
+$('drawerHandle').addEventListener('click',()=>{
+  drawerEl.classList.toggle('open'); sfxClunk(); vibrate(10);
+});
+function closeDrawer(){ drawerEl.classList.remove('open'); }
 
 /* pencil winding / chew repair */
 let winding=false, windHub=null, windLastAng=0, windPrevMode='stop', windTick=0, chewHidden=0;
@@ -1192,22 +1253,130 @@ makeDraggable($('labelsObj'),{
   }
 });
 
-/* envelope: share the mixtape */
+/* envelope: share the mixtape (WhatsApp / Instagram / download) */
 makeDraggable($('envObj'),{
-  onDrop: async e=>{
+  onDrop(e){
     const t=dropTargetTape(e.clientX,e.clientY);
     if(!t) return;
     if(!t.url){ say('that tape is still empty — play or record on it first'); return; }
-    try{
-      const blob=await (await fetch(t.url)).blob();
-      const ext={'audio/wav':'wav','audio/x-wav':'wav','audio/mpeg':'mp3','audio/mp4':'m4a','audio/aac':'m4a','audio/ogg':'ogg','audio/webm':'webm','audio/flac':'flac'}[blob.type]||'wav';
-      const a=document.createElement('a');
-      a.href=t.url;
-      a.download=((t.name||'mixtape').replace(/[^\w\- ']+/g,'').trim()||'mixtape')+'.'+ext;
-      document.body.appendChild(a); a.click(); a.remove();
-      say('mixtape packed up and sent to your downloads 💌');
-    }catch(err){ say('could not export this tape'); }
+    openShare(t);
   }
+});
+let shareTape=null;
+function openShare(t){
+  shareTape=t;
+  $('shareTitle').textContent='"'+t.name+'"';
+  $('shareSheet').classList.add('show');
+}
+$('shareCancel').addEventListener('click',()=>$('shareSheet').classList.remove('show'));
+async function tapeFile(t){
+  const blob=await (await fetch(t.url)).blob();
+  const ext={'audio/wav':'wav','audio/x-wav':'wav','audio/mpeg':'mp3','audio/mp4':'m4a','audio/aac':'m4a','audio/ogg':'ogg','audio/webm':'webm','audio/flac':'flac'}[blob.type]||'wav';
+  const name=((t.name||'mixtape').replace(/[^\w\- ']+/g,'').trim()||'mixtape');
+  return new File([blob], name+'.'+ext, {type:blob.type||'audio/wav'});
+}
+function dlFile(f){
+  const u=URL.createObjectURL(f);
+  const a=document.createElement('a'); a.href=u; a.download=f.name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(u),8000);
+}
+$('shareAudio').addEventListener('click', async ()=>{
+  if(!shareTape) return;
+  $('shareSheet').classList.remove('show');
+  say('packing the mixtape…');
+  try{
+    const f=await tapeFile(shareTape);
+    if(navigator.canShare && navigator.canShare({files:[f]})){
+      await navigator.share({files:[f], title:shareTape.name, text:'made you a mixtape 💌'});
+      say('mixtape sent 💌');
+    }else{
+      dlFile(f);
+      say('share sheet not available here — downloaded instead, send it via WhatsApp');
+    }
+  }catch(err){ /* user cancelled the share sheet */ }
+});
+$('shareDl').addEventListener('click', async ()=>{
+  if(shareTape){ dlFile(await tapeFile(shareTape)); say('mixtape saved to downloads'); }
+  $('shareSheet').classList.remove('show');
+});
+$('shareStory').addEventListener('click', async ()=>{
+  if(!shareTape) return;
+  $('shareSheet').classList.remove('show');
+  say('printing the story card…');
+  try{
+    const blob=await makeStoryPNG(shareTape);
+    const f=new File([blob],'mixtape-story.png',{type:'image/png'});
+    if(navigator.canShare && navigator.canShare({files:[f]})){
+      await navigator.share({files:[f], title:shareTape.name});
+      say('story card shared 📸');
+    }else{
+      dlFile(f);
+      say('story card downloaded — post it to your story 📸');
+    }
+  }catch(err){ say('could not make the story card'); }
+});
+async function makeStoryPNG(t){
+  const W=1080,H=1920;
+  const cv=document.createElement('canvas'); cv.width=W; cv.height=H;
+  const x=cv.getContext('2d');
+  const g=x.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,'#2a2f3a'); g.addColorStop(.55,'#14171d'); g.addColorStop(1,'#0d0f12');
+  x.fillStyle=g; x.fillRect(0,0,W,H);
+  x.fillStyle='rgba(255,255,255,.07)';
+  for(let i=0;i<70;i++){ const s=Math.random()*2.4+0.6; x.fillRect(Math.random()*W,Math.random()*H,s,s); }
+  const svg=cassetteSVG(t);
+  const img=new Image();
+  const url=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml'}));
+  await new Promise((res,rej)=>{ img.onload=res; img.onerror=rej; img.src=url; });
+  const cw=920, chh=cw*190/300;
+  x.save();
+  x.translate(W/2, H/2-40); x.rotate(-0.045);
+  x.shadowColor='rgba(0,0,0,.6)'; x.shadowBlur=60; x.shadowOffsetY=30;
+  x.drawImage(img,-cw/2,-chh/2,cw,chh);
+  x.restore();
+  URL.revokeObjectURL(url);
+  x.textAlign='center';
+  x.fillStyle='#f2e8cf';
+  x.font='bold 58px Courier New, monospace';
+  x.fillText('·  M I X T A P E  ·', W/2, 360);
+  x.fillStyle='#ffdca8';
+  x.font="bold 76px 'Bradley Hand','Segoe Script','Comic Sans MS',cursive";
+  x.fillText(t.name, W/2, H/2+400);
+  x.fillStyle='rgba(255,255,255,.5)';
+  x.font='38px Courier New, monospace';
+  x.fillText('made on my '+(ownerName||'SUPERSOUND')+' walkman', W/2, H-170);
+  return await new Promise(res=>cv.toBlob(res,'image/png'));
+}
+
+/* ============ make it yours: paint + engraved name ============ */
+const THEMES=['','th-blue','th-red','th-black','th-pink','th-yellow'];
+const walkmanEl=document.querySelector('.walkman');
+const brandEl=document.querySelector('.brand');
+let ownerName='';
+function applyTheme(cls){
+  THEMES.filter(Boolean).forEach(c=>walkmanEl.classList.remove(c));
+  if(cls) walkmanEl.classList.add(cls);
+  document.querySelectorAll('.swatch').forEach(s=>s.classList.toggle('sel', (s.dataset.th||'')===cls));
+  try{ localStorage.setItem('wm-theme',cls); }catch(e){}
+}
+document.querySelectorAll('.swatch').forEach(s=>s.addEventListener('click',()=>{
+  applyTheme(s.dataset.th||''); sfxClick(); vibrate(8);
+  say('fresh paint job 🎨');
+}));
+function setOwnerName(n){
+  ownerName=(n||'').toUpperCase().slice(0,14);
+  brandEl.innerHTML=esc(ownerName||'SUPERSOUND')+' <em>stereo</em>';
+  try{ localStorage.setItem('wm-name',ownerName); }catch(e){}
+}
+let editingName=false;
+brandEl.addEventListener('click',()=>{
+  editingName=true; editTape=null;
+  $('labelHead').textContent='ENGRAVE YOUR NAME 🔧';
+  $('labelInput').value=ownerName;
+  $('labelInput').placeholder='your name…';
+  $('labelEditor').classList.add('show');
+  setTimeout(()=>$('labelInput').focus(),50);
 });
 
 /* fresh batteries */
@@ -1230,14 +1399,19 @@ function applyStickyTape(t){
 /* label editor */
 let editTape=null;
 function openLabelEditor(t){
-  editTape=t;
+  editTape=t; editingName=false;
+  $('labelHead').textContent='WRITE ON THE LABEL ✏️';
+  $('labelInput').placeholder='tape title…';
   $('labelInput').value=t.name==='________'?'':t.name;
   $('labelEditor').classList.add('show');
   setTimeout(()=>$('labelInput').focus(),50);
 }
-$('labelCancel').addEventListener('click',()=>{ $('labelEditor').classList.remove('show'); });
+$('labelCancel').addEventListener('click',()=>{ editingName=false; $('labelEditor').classList.remove('show'); });
 $('labelSave').addEventListener('click',()=>{
-  if(editTape){
+  if(editingName){
+    setOwnerName($('labelInput').value.trim());
+    editingName=false; sfxClick(); say('engraved — it\'s officially yours 🔧');
+  }else if(editTape){
     editTape.name=($('labelInput').value.trim()||'untitled').slice(0,24);
     if(loaded && loaded.id===editTape.id) holder.innerHTML=cassetteSVG(editTape);
     renderShelf(); sfxClick(); say('label written ✏️');
@@ -1512,6 +1686,11 @@ tapes.push({ id:'blank', name:'blank — record me!', color:'#c9d6f0', blank:tru
 renderShelf();
 updateBatt();
 radioUI();
+/* restore the owner's custom design */
+try{
+  const th=localStorage.getItem('wm-theme'); if(th) applyTheme(th);
+  const nm=localStorage.getItem('wm-name'); if(nm) setOwnerName(nm);
+}catch(e){}
 
 /* PWA: only when served over http(s) — silently skipped when opened as a local file */
 if('serviceWorker' in navigator && /^https?:/.test(location.protocol)){
