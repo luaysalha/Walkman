@@ -1163,7 +1163,7 @@ function ejectTape(){
 async function doPlay(){
   sfxClick(); vibrate(12);
   if(!loaded){ say('no cassette — insert a tape first'); return; }
-  if(loaded.chewed){ say('the tape is chewed — wind it back in with the pencil'); return; }
+  if(loaded.chewed){ say('the tape is chewed — twist circles on a reel (finger or pencil) to fix it'); return; }
   if(batt<=0){ say('battery is dead — drag the spare cell from the tool drawer onto the walkman'); return; }
   clearSeek();
   if(mode==='play') return;
@@ -1261,16 +1261,33 @@ function holdEnd(hitEnd){
   if(prevHoldMode==='play' && !hitEnd) doPlay();
   else { doStop(false); if(loaded) setMode('stop'); }
 }
+let fingerWind=false;
 deckWin.addEventListener('pointerdown',e=>{
   if(!loaded||animBusy) return;
   e.preventDefault();
+  if(loaded.chewed){
+    // chewed tape: twist with your finger — circles around either reel wind it back in
+    const h=hubAt(e.clientX,e.clientY);
+    if(h){
+      fingerWind=true;
+      windStart(h,e);
+      try{ deckWin.setPointerCapture(e.pointerId); }catch(err){}
+    }
+    return;
+  }
   vibrate(10);
   const r=deckWin.getBoundingClientRect();
   const x=(e.clientX-r.left)/r.width;
   holdStart(x>=0.5?1:-1);
 });
+deckWin.addEventListener('pointermove',e=>{
+  if(fingerWind && winding) windMove(e);
+});
 ['pointerup','pointercancel','pointerleave'].forEach(ev=>
-  deckWin.addEventListener(ev,()=>holdEnd(false)));
+  deckWin.addEventListener(ev,()=>{
+    holdEnd(false);
+    if(fingerWind){ fingerWind=false; windEnd(); }
+  }));
 
 /* ============ drag & drop for desk objects ============ */
 function dropTargetTape(x,y){
@@ -1290,8 +1307,8 @@ function hubAt(x,y){
   if(!loaded) return null;
   const r=deckWin.getBoundingClientRect();
   const hubs=[
-    {x:r.left+r.width*0.365, y:r.top+r.height*0.40},
-    {x:r.left+r.width*0.645, y:r.top+r.height*0.40}
+    {x:r.left+r.width*0.365, y:r.top+r.height*0.40, i:0},
+    {x:r.left+r.width*0.645, y:r.top+r.height*0.40, i:1}
   ];
   if(loaded.chewed){
     // chewed tape: the whole deck window is the repair zone — snap to nearest hub
@@ -1408,7 +1425,7 @@ makeDraggable($('pencilObj'),{
     const h=hubAt(e.clientX,e.clientY);
     if(h){
       if(!winding) windStart(h,e);
-      else if(windHub===h) windMove(e);
+      else if(windHub && windHub.i===h.i){ windHub=h; windMove(e); } // same reel — keep twisting
       else { windEnd(); windStart(h,e); }
     } else if(winding){ windEnd(); }
   },
@@ -1630,7 +1647,7 @@ function startChew(){
     doStop(false);
     holder.innerHTML=cassetteSVG(loaded);
     sfxClunk();
-    say('💀 the walkman ate the tape! put the pencil in a reel and twist to wind it back');
+    say('💀 the walkman ate the tape! twist circles on a reel — finger or pencil — to wind it back');
   },1300);
 }
 
